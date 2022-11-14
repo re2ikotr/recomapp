@@ -3,6 +3,8 @@ package com.java.myfirsttest;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.IBinder;
@@ -18,11 +20,14 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
 import com.java.myfirsttest.common.Common;
+
+import java.util.List;
 
 public class FloatingWindowGFG extends Service {
 
@@ -33,6 +38,8 @@ public class FloatingWindowGFG extends Service {
     private int LAYOUT_TYPE;
     private WindowManager.LayoutParams floatWindowLayoutParam;
     private WindowManager windowManager;
+    private PackageManager packageManager;
+    private List<PackageInfo> packageInfoList;
     private Button maximizeBtn;
     private EditText descEditArea;
     private Button saveBtn;
@@ -58,6 +65,18 @@ public class FloatingWindowGFG extends Service {
         // To obtain a WindowManager of a different Display,
         // we need a Context for that display, so WINDOW_SERVICE is used
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+
+        // Get all installed apps
+        // To get a certain app's icon (like meituan), use:
+//        ImageView imageView = findViewById(R.id.imageView);
+//        for (PackageInfo packageInfo: packageInfoList) {
+//            if (packageInfo.applicationInfo.packageName.equals("com.sankuai.meituan")) {
+//                imageView.setImageDrawable(packageInfo.applicationInfo.loadIcon(packageManager));
+//                break;
+//            }
+//        }
+        packageManager = getPackageManager();
+        packageInfoList = packageManager.getInstalledPackages(0);
 
         // A LayoutInflater instance is created to retrieve the
         // LayoutInflater for the floating_layout xml
