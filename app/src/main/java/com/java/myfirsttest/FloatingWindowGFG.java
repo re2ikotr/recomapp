@@ -67,11 +67,17 @@ public class FloatingWindowGFG extends Service {
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
 
         // Get all installed apps
-        // To get a certain app's icon (like meituan), use:
+        // To get a certain app's icon (like meituan), and link the imageView with that app, use:
 //        ImageView imageView = findViewById(R.id.imageView);
 //        for (PackageInfo packageInfo: packageInfoList) {
 //            if (packageInfo.applicationInfo.packageName.equals("com.sankuai.meituan")) {
 //                imageView.setImageDrawable(packageInfo.applicationInfo.loadIcon(packageManager));
+//                imageView.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        startActivity(packageManager.getLaunchIntentForPackage("com.sankuai.meituan"));
+//                    }
+//                });
 //                break;
 //            }
 //        }
