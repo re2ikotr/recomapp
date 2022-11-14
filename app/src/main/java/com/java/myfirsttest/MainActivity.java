@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private AlertDialog dialog;
     private EditText descEditArea;
     private Button save;
+    private MyAccessibilityService myAccessibilityService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
         minimizeBtn = findViewById(R.id.buttonMinimize);
         descEditArea = findViewById(R.id.descEditText);
         save = findViewById(R.id.saveBtn);
+        myAccessibilityService = new MyAccessibilityService();
 
         // If the app is started again while the
         // floating window service is running
