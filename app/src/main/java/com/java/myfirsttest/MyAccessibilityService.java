@@ -27,9 +27,9 @@ import java.util.Map;
 
 public class MyAccessibilityService extends AccessibilityService {
     public String TAG = "MyAccessibilityService";
-    private Map<String, Integer> app_count;
+    public static Map<String, Integer> app_count;
     private String last_packageName = "";
-    private final List<String> systemPackages = new ArrayList<>(Arrays.asList(
+    public static final List<String> systemPackages = new ArrayList<>(Arrays.asList(
         "com.android.systemui",
         "com.huawei.android.launcher",
         "com.bbk.launcher2",
@@ -49,7 +49,10 @@ public class MyAccessibilityService extends AccessibilityService {
         "com.android.settings",
         "android",
         "com.android.mms",
-        "com.miui.personalassistant"
+        "com.miui.personalassistant",
+        "com.huawei.android.totemweather",
+        "com.huawei.magazine",
+        "com.java.myfirsttest"
     ));
 
     @Override
@@ -101,7 +104,7 @@ public class MyAccessibilityService extends AccessibilityService {
         }
     }
 
-    private Map<String, Integer> getMap() {
+    public Map<String, Integer> getMap() {
         FileInputStream fis = null;
         String text="";
         try{
