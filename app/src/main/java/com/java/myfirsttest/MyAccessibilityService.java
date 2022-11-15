@@ -52,7 +52,10 @@ public class MyAccessibilityService extends AccessibilityService {
         "com.miui.personalassistant",
         "com.huawei.android.totemweather",
         "com.huawei.magazine",
-        "com.java.myfirsttest"
+        "com.java.myfirsttest",
+        "com.baidu.input_mi",
+        "miui.systemui.plugin",
+        "com.android.permissioncontroller"
     ));
 
     @Override
