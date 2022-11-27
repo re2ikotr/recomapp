@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">Recomapp</string>
+    <string name="permission_flatwindow">打开「悬浮窗」</string>
+    <string name="permission_flatwindow_">请开启「悬浮窗」权限~</string>
+    <string name="permission_accessibility">打开「侧边栏」</string>
+    <string name="permission_accessibility_">请开启「侧边栏」权限~</string>
+    <string name="accessibility_description">开启此功能打开侧边栏</string>
+    <string name="app_not_find">未找到批注应用！</string>
+    <string name="brightness">亮度</string>
+    <string name="back">返回</string>
+    <string name="home">主页</string>
+    <string name="annotation">批注</string>
+    <string name="volume">音量</string>
+    <string name="backstage">后台</string>
+    <string name="setting_modify_toast">调节系统亮度需要开启如下权限~</string>
+    <string name="permission_notice">所有权限都已打开</string>
+    <string name="action_settings">Settings</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="accessibility_service_label">recomapp</string>
+    <string name="accessibility_service_description">检测您使用app的历史</string>
+</resources>
