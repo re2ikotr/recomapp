@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -47,6 +48,7 @@ public class SidePanel implements View.OnClickListener {
     private ControlBar mControlBar;
     private LinearLayout mSeekBarView;
     private LinearLayout mAnotherArrowView;
+    private Button exit_button;
     private int mTagTemp = -1;
 
     private ArrayList<Map.Entry<String, Integer>> appList;
@@ -97,6 +99,7 @@ public class SidePanel implements View.OnClickListener {
             }
         });
 
+
         Map<String, Integer> appCount = MyAccessibilityService.app_count;
         appList = new ArrayList<>();
         if(appCount != null) {
@@ -121,7 +124,15 @@ public class SidePanel implements View.OnClickListener {
         ImageView imageView3 = mContentView.findViewById(R.id.app3);
         ImageView imageView4 = mContentView.findViewById(R.id.app4);
         ImageView imageView5 = mContentView.findViewById(R.id.app5);
+        exit_button = mContentView.findViewById(R.id.exit_button);
         Log.i(TAG, appList.toString());
+        exit_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("Click", "onClick in exit_button");
+                goNormal();
+            }
+        });
         for (PackageInfo packageInfo: packageInfoList) {
             if (packageInfo.applicationInfo.packageName.equals("com.tencent.mm")) {
                 String app1 = "com.tencent.mm";
