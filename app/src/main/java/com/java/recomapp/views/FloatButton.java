@@ -3,6 +3,7 @@ package com.java.recomapp.views;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.os.Build;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,7 +30,7 @@ public class FloatButton implements View.OnClickListener {
     private WindowManager mWindowManager;
     private SideBarService mSideBarService;
     private SidePanel mContentBar;
-    private LinearLayout mContentBarView;
+    private androidx.constraintlayout.widget.ConstraintLayout mContentBarView;
     private LinearLayout mAnotherArrowView;
 
     public LinearLayout getView(Context context,boolean left,WindowManager windowManager,SideBarService sideBarService) {
@@ -72,6 +73,7 @@ public class FloatButton implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
+        Log.d("Click", "onClick in FloatButton");
         switch (v.getId()) {
             case R.id.arrow:
                 mArrowView.setVisibility(View.GONE);

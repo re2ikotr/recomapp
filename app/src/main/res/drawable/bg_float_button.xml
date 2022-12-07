@@ -16,7 +16,7 @@
 <!--        android:fillColor="@color/color_main"-->
 <!--        android:pathData="M 100 970 A 70, 70 0 0 1 30, 900"/>-->
     <path
-        android:fillColor="@color/cardview_light_background"
+        android:fillColor="@color/bg_button_normal"
         android:pathData="M 800 950 A 150, 150 0 0 0 950, 800
                           L 950 200
                           A 150, 150 0 0 0 800, 50
@@ -27,9 +27,9 @@
                           L 800 950
                           " />
     <path
-        android:fillColor="@color/color_main"
+        android:fillColor="@color/bg_button_touch"
         android:pathData="M 500 800 A 200, 200 0 1 0 500, 200"/>
     <path
-        android:fillColor="@color/color_main"
+        android:fillColor="@color/bg_button_touch"
         android:pathData="M 500 800 A 200, 200 0 1 1 500, 200"/>
 </vector>
