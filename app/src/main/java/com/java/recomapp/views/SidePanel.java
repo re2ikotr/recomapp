@@ -39,7 +39,8 @@ public class SidePanel implements View.OnClickListener {
 
     private Context mContext;
     private boolean mLeft;
-    private LinearLayout mContentView;
+//    private LinearLayout mContentView;
+    private androidx.constraintlayout.widget.ConstraintLayout mContentView;
     private WindowManager mWindowManager;
     private LinearLayout mArrowView;
     private SideBarService mSideBarService;
@@ -56,6 +57,8 @@ public class SidePanel implements View.OnClickListener {
     private static final int COUNT_DOWN_TAG = 1;
     private static final int COUNT_DWON_TIME = 5000;
 
+    private LayoutInflater mLayoutInflater;
+
     @SuppressLint("HandlerLeak")
     private Handler mHandler = new Handler(){
         @Override
@@ -68,7 +71,7 @@ public class SidePanel implements View.OnClickListener {
         }
     };
 
-    LinearLayout getView(Context context,
+    androidx.constraintlayout.widget.ConstraintLayout getView(Context context,
                          boolean left,
                          WindowManager windowManager,
                          WindowManager.LayoutParams params,
@@ -82,8 +85,17 @@ public class SidePanel implements View.OnClickListener {
         mSideBarService = sideBarService;
         mAnotherArrowView = anotherArrowView;
         // get layout
+        if (mLayoutInflater == null) {
+            mLayoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
         LayoutInflater inflater = LayoutInflater.from(context);
-        mContentView = (LinearLayout) inflater.inflate(R.layout.layout_panel, null);
+        mContentView = (androidx.constraintlayout.widget.ConstraintLayout) mLayoutInflater.inflate(R.layout.layout_panel, null, false);
+        mContentView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("Click", "onClick in SidePanel");
+            }
+        });
 
         Map<String, Integer> appCount = MyAccessibilityService.app_count;
         appList = new ArrayList<>();
