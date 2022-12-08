@@ -13,6 +13,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
 public class FileUtils {
+    public final static String TAG = "FileUtils";
     public static void makeDir(String directory) {
         try {
             File file = new File(directory);
@@ -73,7 +74,7 @@ public class FileUtils {
     }
 
     public static String getFileContent(String filename) {
-        Log.e("Uploader", "Get file content " + filename);
+        Log.e(TAG, "Get file content " + filename);
         StringBuffer buffer = new StringBuffer();
         BufferedReader reader = null;
         try {
