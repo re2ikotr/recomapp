@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/bg"
     android:gravity="center"
@@ -22,5 +22,26 @@
         style="@style/MainButtonStyle"
         android:onClick="goGetAccessibility"
         android:text="@string/permission_accessibility" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/enable_recomapp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:text="是否开启推荐" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/enable_decision_tree"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:text="是否使用智能推荐" />
+    </LinearLayout>
 
 </LinearLayout>
