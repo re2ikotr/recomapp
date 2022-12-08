@@ -23,6 +23,7 @@ import com.java.recomapp.utils.PermissionUtil;
  * @author majh
  */
 public class MainActivity extends AppCompatActivity {
+    public static String FILE_FOLDER;
 
     private AppCompatButton mFlastWindowButton;
     private AppCompatButton mAccessibilityButton;
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FILE_FOLDER = getExternalMediaDirs()[0].getAbsolutePath() + "/";
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
         mFlastWindowButton = findViewById(R.id.btn_flatwindow);
