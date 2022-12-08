@@ -11,6 +11,13 @@
     android:elevation="10dp"
     tools:context=".MainActivity">
 
+    <TextView
+        android:id="@+id/activate_service_hint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:text="我们的服务需要打开相应权限，请点击下方按钮前往进行设置。" />
+
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_flatwindow"
         style="@style/MainButtonStyle"
@@ -24,17 +31,18 @@
         android:text="@string/permission_accessibility" />
 
     <LinearLayout
+        android:id="@+id/other_ui_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         >
 
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/enable_recomapp"
+        <Button
+            android:id="@+id/btn_close_accessibility"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="48dp"
-            android:text="是否开启推荐" />
+            android:onClick="goGetAccessibility"
+            android:text="前往关闭推荐服务" />
 
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/enable_decision_tree"

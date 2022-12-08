@@ -97,6 +97,8 @@ public class MyAccessibilityService extends AccessibilityService {
         String result = new JSONObject(app_count).toString();
         String FILENAME = "app_times_count.txt";
 
+        Log.d(TAG, "saving map" + result);
+
         FileOutputStream fos = null;
         try {
             fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);

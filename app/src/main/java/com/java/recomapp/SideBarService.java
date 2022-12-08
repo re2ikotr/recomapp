@@ -4,6 +4,7 @@ import android.accessibilityservice.AccessibilityService;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.util.Log;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.LinearLayout;
@@ -21,6 +22,7 @@ public class SideBarService extends AccessibilityService {
     private FloatButton mFloatButton;
 
     private static final String ACTION_HIDE = "com.xunfeivr.maxsidebar.ACTION_HIDE";
+    private static final String TAG = "side_bar_service";
 
     @Override
     public void onCreate() {
@@ -58,7 +60,7 @@ public class SideBarService extends AccessibilityService {
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-
+//        Log.i(TAG, event.toString());
     }
 
     @Override

@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -24,6 +26,8 @@ public class MainActivity extends AppCompatActivity {
 
     private AppCompatButton mFlastWindowButton;
     private AppCompatButton mAccessibilityButton;
+    private LinearLayout other_ui_container;
+    private TextView activate_service_hint;
     private static final int FLAT_REQUEST_CODE = 213;
     private static final int ACCESSIBILITY_REQUEST_CODE = 438;
 
@@ -36,12 +40,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mFlastWindowButton = findViewById(R.id.btn_flatwindow);
         mAccessibilityButton = findViewById(R.id.btn_accessibility);
+        other_ui_container = findViewById(R.id.other_ui_container);
+        other_ui_container.setVisibility(View.GONE);
+        activate_service_hint = findViewById(R.id.activate_service_hint);
         myAccessibilityService = new MyAccessibilityService();
         flatWindowVisible();
     }
 
     /**
-     * flut button visible
+     * float button visible
      */
     private void flatWindowVisible() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -53,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 // permission unauthorized,button visible
                 mFlastWindowButton.setVisibility(View.VISIBLE);
+                activate_service_hint.setVisibility(View.VISIBLE);
                 Toast.makeText(this,getString(R.string.permission_flatwindow_),Toast.LENGTH_SHORT).show();
             }
         } else {
@@ -68,9 +76,12 @@ public class MainActivity extends AppCompatActivity {
     private void accessibilityVisible() {
         if(PermissionUtil.isAccessibilityServiceEnable(this)) {
             Toast.makeText(this,getString(R.string.permission_notice),Toast.LENGTH_SHORT).show();
-            finish();
+            mAccessibilityButton.setVisibility(View.GONE);
+            other_ui_container.setVisibility(View.VISIBLE);
+            activate_service_hint.setVisibility(View.GONE);
         }else {
             mAccessibilityButton.setVisibility(View.VISIBLE);
+            activate_service_hint.setVisibility(View.VISIBLE);
             Toast.makeText(this,getString(R.string.permission_accessibility_),Toast.LENGTH_SHORT).show();
         }
     }
