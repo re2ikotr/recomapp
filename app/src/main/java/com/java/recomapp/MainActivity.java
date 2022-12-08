@@ -105,4 +105,11 @@ public class MainActivity extends AppCompatActivity {
             accessibilityVisible();
         }
     }
+
+    /**
+     * 按打开次数的简单推荐算法，次数统计信息存在本地文件。
+     * 此函数用来将其删除。
+     */
+    public void clearLocalCache() {
+    }
 }

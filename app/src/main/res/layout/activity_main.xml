@@ -50,6 +50,14 @@
             android:layout_height="wrap_content"
             android:minHeight="48dp"
             android:text="是否使用智能推荐" />
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:onClick="clearLocalCache"
+            android:text="清除本地缓存" />
     </LinearLayout>
 
 </LinearLayout>
