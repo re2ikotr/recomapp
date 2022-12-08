@@ -31,8 +31,6 @@ public class MainActivity extends AppCompatActivity {
     private static final int FLAT_REQUEST_CODE = 213;
     private static final int ACCESSIBILITY_REQUEST_CODE = 438;
 
-    private MyAccessibilityService myAccessibilityService;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
         other_ui_container = findViewById(R.id.other_ui_container);
         other_ui_container.setVisibility(View.GONE);
         activate_service_hint = findViewById(R.id.activate_service_hint);
-        myAccessibilityService = new MyAccessibilityService();
         flatWindowVisible();
     }
 
