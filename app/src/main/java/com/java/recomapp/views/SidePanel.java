@@ -133,56 +133,6 @@ public class SidePanel implements View.OnClickListener {
             }
         });
         for (PackageInfo packageInfo: packageInfoList) {
-//            if (packageInfo.applicationInfo.packageName.equals("com.tencent.mm")) {
-//                String app1 = "com.tencent.mm";
-//                imageView1.setImageDrawable(packageInfo.applicationInfo.loadIcon(packageManager));
-//                imageView1.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        mContext.startActivity(packageManager.getLaunchIntentForPackage(app1));
-//                    }
-//                });
-//            }
-//            if (packageInfo.applicationInfo.packageName.equals("com.tencent.mm")) {
-//                String app1 = "com.tencent.mm";
-//                imageView2.setImageDrawable(packageInfo.applicationInfo.loadIcon(packageManager));
-//                imageView2.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        mContext.startActivity(packageManager.getLaunchIntentForPackage(app1));
-//                    }
-//                });
-//            }
-//            if (packageInfo.applicationInfo.packageName.equals("com.tencent.mm")) {
-//                String app1 = "com.tencent.mm";
-//                imageView3.setImageDrawable(packageInfo.applicationInfo.loadIcon(packageManager));
-//                imageView3.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        mContext.startActivity(packageManager.getLaunchIntentForPackage(app1));
-//                    }
-//                });
-//            }
-//            if (packageInfo.applicationInfo.packageName.equals("com.tencent.mm")) {
-//                String app1 = "com.tencent.mm";
-//                imageView4.setImageDrawable(packageInfo.applicationInfo.loadIcon(packageManager));
-//                imageView4.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        mContext.startActivity(packageManager.getLaunchIntentForPackage(app1));
-//                    }
-//                });
-//            }
-//            if (packageInfo.applicationInfo.packageName.equals("com.tencent.mm")) {
-//                String app1 = "com.tencent.mm";
-//                imageView5.setImageDrawable(packageInfo.applicationInfo.loadIcon(packageManager));
-//                imageView5.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        mContext.startActivity(packageManager.getLaunchIntentForPackage(app1));
-//                    }
-//                });
-//            }
             if (appList.size() > 0 && packageInfo.applicationInfo.packageName.equals(appList.get(0).getKey())) {
                 String app1 = appList.get(0).getKey();
                 imageView1.setImageDrawable(packageInfo.applicationInfo.loadIcon(packageManager));

@@ -109,7 +109,7 @@ public class SideBarService extends AccessibilityService {
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
 //        Log.i(TAG, event.toString());
-        if (event.getPackageName() != null) {
+        if (event.getPackageName() != null && event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
             String packageName = event.getPackageName().toString();
             if (!systemPackages.contains(packageName) && !last_packageName.equals(packageName)) {
                 Integer count = app_count.get(packageName);
