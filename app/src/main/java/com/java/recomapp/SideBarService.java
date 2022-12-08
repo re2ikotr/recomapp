@@ -10,11 +10,13 @@ import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.LinearLayout;
 
+import com.java.recomapp.utils.FileUtils;
 import com.java.recomapp.views.FloatButton;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -148,35 +150,12 @@ public class SideBarService extends AccessibilityService {
 
         Log.d(TAG, "saving map" + result);
 
-        FileOutputStream fos = null;
-        try {
-            fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
-            fos.write(result.getBytes());
-            fos.flush();
-            fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        FileUtils.writeStringToFile(result, new File(MainActivity.FILE_FOLDER + FILENAME));
     }
 
     public Map<String, Integer> getMap() {
-        FileInputStream fis = null;
-        String text="";
-        try{
-            fis = openFileInput("app_times_count.txt");		//获取FILE_NAME文件内容
-            if(fis.available() == 0){			//如果什么都没获取到就返回空字符串
-                return new HashMap<>();
-            }
-            byte[] readBytes = new byte[fis.available()];	//将获取数据以二进制方式保存到数组中
-            fis.read(readBytes);	//这句不加就不能正常读取，我认为这句是将转为二进制的信息解码
-            text = new String(readBytes, StandardCharsets.UTF_8);	//转化为utf8类型字符串
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return new HashMap<>();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String FILENAME = "app_times_count.txt";
+        String text = FileUtils.getFileContent(MainActivity.FILE_FOLDER + FILENAME);
         Map<String, Integer> result = new HashMap<>();
         try {
             JSONObject jsonObject = new JSONObject(text);
