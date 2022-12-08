@@ -22,7 +22,7 @@ import com.java.recomapp.utils.PermissionUtil;
  */
 public class MainActivity extends AppCompatActivity {
 
-    private AppCompatButton mFlastWindowButton;
+    private AppCompatButton mFlatWindowButton;
     private AppCompatButton mAccessibilityButton;
     private static final int FLAT_REQUEST_CODE = 213;
     private static final int ACCESSIBILITY_REQUEST_CODE = 438;
@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
-        mFlastWindowButton = findViewById(R.id.btn_flatwindow);
+        mFlatWindowButton = findViewById(R.id.btn_flatwindow);
         mAccessibilityButton = findViewById(R.id.btn_accessibility);
         myAccessibilityService = new MyAccessibilityService();
         flatWindowVisible();
@@ -48,16 +48,16 @@ public class MainActivity extends AppCompatActivity {
             // > M,grant permission
             if (PermissionUtil.isCanDrawOverlays(this)) {
                 // permission authorized,service go,button gone
-                mFlastWindowButton.setVisibility(View.GONE);
+                mFlatWindowButton.setVisibility(View.GONE);
                 accessibilityVisible();
             } else {
                 // permission unauthorized,button visible
-                mFlastWindowButton.setVisibility(View.VISIBLE);
+                mFlatWindowButton.setVisibility(View.VISIBLE);
                 Toast.makeText(this,getString(R.string.permission_flatwindow_),Toast.LENGTH_SHORT).show();
             }
         } else {
             // < M,service go,gone
-            mFlastWindowButton.setVisibility(View.GONE);
+            mFlatWindowButton.setVisibility(View.GONE);
             accessibilityVisible();
         }
     }
