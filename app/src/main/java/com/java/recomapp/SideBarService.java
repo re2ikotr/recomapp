@@ -71,7 +71,8 @@ public class SideBarService extends AccessibilityService {
             "com.java.myfirsttest",
             "com.baidu.input_mi",
             "miui.systemui.plugin",
-            "com.android.permissioncontroller"
+            "com.android.permissioncontroller",
+            "com.java.recomapp"
     ));
 
     @Override
@@ -110,7 +111,6 @@ public class SideBarService extends AccessibilityService {
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-//        Log.i(TAG, event.toString());
         if (event.getPackageName() != null && event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
             String packageName = event.getPackageName().toString();
             if (!systemPackages.contains(packageName) && !last_packageName.equals(packageName)) {

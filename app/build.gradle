@@ -9,7 +9,7 @@ android {
     defaultConfig {
         applicationId "com.java.recomapp"
         minSdk 28
-        targetSdk 32
+        targetSdk 29
         versionCode 1
         versionName "1.0"
 
