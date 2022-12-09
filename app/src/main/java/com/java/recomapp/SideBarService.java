@@ -44,7 +44,8 @@ public class SideBarService extends AccessibilityService {
 
     // from wsy's MyAccessibilityService
     public static Map<String, Integer> app_count;
-    private String last_packageName = "";
+    public static String last_packageName = "";
+    public static String last_last_packageName = "";
     public static final List<String> systemPackages = new ArrayList<>(Arrays.asList(
             "com.android.systemui",
             "com.huawei.android.launcher",
@@ -119,6 +120,7 @@ public class SideBarService extends AccessibilityService {
                     app_count.put(packageName, 1);
                 else
                     app_count.put(packageName, count + 1);
+                last_last_packageName = last_packageName;
                 last_packageName = packageName;
                 saveMap(app_count);
             }
