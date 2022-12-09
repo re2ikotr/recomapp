@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
 
 public class DeviceManager {
     public final static String TAG = "DeviceManager";
@@ -17,7 +18,7 @@ public class DeviceManager {
     private BluetoothManager bluetoothManager;
     private Context mContext;
 
-    public DeviceManager(Context context) {
+    public DeviceManager(Context context, ScheduledExecutorService executorService) {
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         bluetoothManager = (BluetoothManager) mContext.getSystemService(Context.BLUETOOTH_SERVICE);
     }
