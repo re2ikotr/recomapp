@@ -1,15 +1,11 @@
 package com.java.recomapp.decisiontree;
-import android.view.contentcapture.DataShareRequest;
-
-import androidx.appcompat.widget.VectorEnabledTintResources;
-
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 enum Algorithm{
     ID3, C4_5, CART
@@ -32,25 +28,53 @@ class TreeNode{
         feature = Features.INVALID;
         branches = new HashMap<>();
     }
+
+    public void saveModel(String savePath){
+    }
+
+    public void loadModel(String loadPath){
+
+    }
+}
+
+class AppNameReturn{
+    public List<String> appNameList;
+    public int maxReturnNumber;
+    public AppNameReturn(int size){
+        appNameList = new ArrayList<>();
+        maxReturnNumber = size;
+    }
+    public void add(String appName){
+        appNameList.add(appName);
+        if(appNameList.size() > maxReturnNumber){
+            appNameList.remove(0);
+        }
+    }
 }
 
 class Dataset{
     public List<int[]> xData;
     public List<String> yData;
-    public int maxSize;
-    public HashMap<String, Integer> appCount;
-    public Dataset(int size){
-        maxSize = size;
+    public int maxDatasetSize;
+    public Map<String, Integer> appCount;
+    public Dataset(int datasetSize){
+        xData = new ArrayList<>();
+        yData = new ArrayList<>();
+        appCount = new HashMap<>();
+        maxDatasetSize = datasetSize;
     }
 
     public void update(int[] x, String y){
         xData.add(x);
         yData.add(y);
         appCount.put(y, appCount.getOrDefault(y, 0)+1);
-        if(xData.size() > maxSize){
-            int result = appCount.getOrDefault(y, 0);
-            if(appCount.containsKey(y) && result <= 1){
+        if(yData.size() > maxDatasetSize){
+            String dropAppName = yData.get(0);
+            int result = appCount.getOrDefault(dropAppName, 0);
+            if(result <= 1){
                 appCount.remove(y);
+            }else{
+                appCount.put(dropAppName, result-1);
             }
             xData.remove(0);
             yData.remove(0);
@@ -80,12 +104,12 @@ public class Decision {
     }
 
     public void genTree(TreeNode rootNode, Dataset data, boolean[] validList){
-        boolean isSameAppName = this.checkSameAppName();
+        boolean isSameAppName = this.checkSameAppName(data.appCount);
         if(isSameAppName){
             rootNode.appName = data.yData.get(0);
             return ;
         }
-        rootNode.appName = this.getMajorityAppName();
+        rootNode.appName = this.getMajorityAppName(data.appCount);
         int bestFeature = this.decideBestFeature(validList);
         if(bestFeature != -1){
             Set<Integer> values = this.getValuesOfFeature(bestFeature);
@@ -114,23 +138,14 @@ public class Decision {
         this.appNameList = appName;
     }
 
-    public boolean checkSameAppName(){
-        if (data.yData.size() == 0) {
-            return false;
-        }
-        String sameAppName = data.yData.get(0);
-        for(String appName: data.yData){
-            if(!sameAppName.equals(appName)){
-                return false;
-            }
-        }
-        return true;
+    public boolean checkSameAppName(Map<String, Integer> appCount){
+        return appCount.size() == 1;
     }
 
-    public String getMajorityAppName(){
+    public String getMajorityAppName(Map<String, Integer> appCount){
         int maxCount = 0;
         String maxAppName = "";
-        for (Map.Entry<String, Integer> entry : data.appCount.entrySet()) {
+        for (Map.Entry<String, Integer> entry : appCount.entrySet()) {
             Integer value = entry.getValue();
             if(value > maxCount){
                 maxAppName = entry.getKey();
@@ -174,7 +189,7 @@ public class Decision {
     }
 
     public Dataset getFeatureValueDataset(int feature, int value){
-        Dataset newData = new Dataset(this.data.maxSize);
+        Dataset newData = new Dataset(this.data.maxDatasetSize);
         Iterator<int[]> xIterator = data.xData.iterator();
         Iterator<String> yIterator = data.yData.iterator();
         while(xIterator.hasNext() && yIterator.hasNext()){
@@ -247,45 +262,48 @@ public class Decision {
         return sum;
     }
 
-    public Vector<String> predict(Vector<int[]> xPredict){
+    public List<List<String>> predict(List<int[]> xPredict){
         // TODO make sure that there is a decisionTree
-        Vector<String> predictArray = new Vector<>();
+        List<List<String>> predictArray = new ArrayList<>();
         for (int[] xData: xPredict){
             TreeNode currentNode = this.root;
+            AppNameReturn result = new AppNameReturn(this.returnAppCount);
+            result.add(this.root.appName);
             while (true){
                 TreeNode subNode = currentNode.branches.get(xData[currentNode.feature]);
                 if (subNode == null){
-                    predictArray.add(currentNode.appName);
                     break;
                 }else{
                     currentNode = subNode;
+                    result.add(currentNode.appName);
                 }
             }
+            predictArray.add(result.appNameList);
         }
         return predictArray;
     }
 
     public double score(Dataset data){
         int count = 0;
-        Iterator<int[]> xIterator = data.xData.iterator();
-        Iterator<String> yIterator = data.yData.iterator();
-        while(xIterator.hasNext() && yIterator.hasNext()){
-            TreeNode currentNode = this.root;
-            int[] xData = xIterator.next();
-            String yData = yIterator.next();
-            while (true){
-                TreeNode subNode = currentNode.branches.get(xData[currentNode.feature]);
-                if (subNode == null){
-                    if(currentNode.appName.equals(yData)){
-                        count += 1;
-                    }
-                    break;
-                }else{
-                    currentNode = subNode;
-                }
+        List<List<String>> predictResult = this.predict(data.xData);
+        Iterator<String> realIterator = data.yData.iterator();
+        Iterator<List<String>> predictIterator = predictResult.iterator();
+        while(realIterator.hasNext() && predictIterator.hasNext()){
+            String realAppName = realIterator.next();
+            List<String> predictAppNameList = predictIterator.next();
+            if(this.isProper(predictAppNameList, realAppName)){
+                count += 1;
             }
         }
         return (double)(count) / (double)(data.yData.size());
     }
 
+    public boolean isProper(List<String> predict, String real){
+        for(String predictAppName:predict){
+            if(real.equals(real)){
+                return true;
+            }
+        }
+        return false;
+    }
 }
