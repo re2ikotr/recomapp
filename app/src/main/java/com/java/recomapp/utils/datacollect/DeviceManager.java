@@ -1,10 +1,15 @@
 package com.java.recomapp.utils.datacollect;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.util.Log;
+
+import androidx.core.app.ActivityCompat;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -23,11 +28,21 @@ public class DeviceManager {
         bluetoothManager = (BluetoothManager) mContext.getSystemService(Context.BLUETOOTH_SERVICE);
     }
 
-    @SuppressLint("MissingPermission")
     public List<Integer> getDevices() {
         if (bluetoothAdapter == null)
             return new ArrayList<>();
-        
+
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            Log.e(TAG, "Permission denied");
+            return new ArrayList<>();
+        }
         Set<BluetoothDevice> bluetoothDevices = bluetoothAdapter.getBondedDevices();
         if (bluetoothDevices == null)
             return new ArrayList<>();
