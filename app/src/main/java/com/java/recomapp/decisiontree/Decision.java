@@ -1,4 +1,11 @@
 package com.java.recomapp.decisiontree;
+import android.content.Context;
+
+import com.java.recomapp.utils.datacollect.DeviceManager;
+import com.java.recomapp.utils.datacollect.MotionManager;
+import com.java.recomapp.utils.datacollect.NoiseManager;
+import com.java.recomapp.utils.datacollect.PositionManager;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -6,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
 
 enum Algorithm{
     ID3, C4_5, CART
@@ -92,7 +100,11 @@ public class Decision {
     int returnAppCount;
     int trainStep;
     Dataset data;
-    public Decision(int DatasetSize, int trainStep, int returnAppCount, List<String> appNameList){
+    DeviceManager deviceManager;
+    MotionManager motionManager;
+    NoiseManager noiseManager;
+    PositionManager positionManager;
+    public Decision(int DatasetSize, int trainStep, int returnAppCount, List<String> appNameList, Context context, ScheduledExecutorService executorService){
         this.root = new TreeNode();
         this.algorithm = Algorithm.CART;
         this.trained = false;
@@ -101,6 +113,10 @@ public class Decision {
         this.trainStep = trainStep;
         this.returnAppCount = returnAppCount;
         this.appNameList = appNameList;
+        this.deviceManager = new DeviceManager(context, executorService);
+        this.motionManager = new MotionManager(context, executorService);
+        this.noiseManager = new NoiseManager(context, executorService);
+        this.positionManager = new PositionManager(context, executorService);
     }
 
     public void genTree(TreeNode rootNode, Dataset data, boolean[] validList){
@@ -262,7 +278,11 @@ public class Decision {
         return sum;
     }
 
-    public List<List<String>> predict(List<int[]> xPredict){
+    public List<String> predict() {
+
+    };
+
+    private List<List<String>> predict(List<int[]> xPredict){
         // TODO make sure that there is a decisionTree
         List<List<String>> predictArray = new ArrayList<>();
         for (int[] xData: xPredict){
