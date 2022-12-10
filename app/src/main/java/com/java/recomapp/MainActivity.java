@@ -15,6 +15,8 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.java.recomapp.utils.PermissionUtil;
 
 /**
@@ -24,6 +26,7 @@ import com.java.recomapp.utils.PermissionUtil;
  */
 public class MainActivity extends AppCompatActivity {
     public static String FILE_FOLDER;
+    public static final Gson gson = new GsonBuilder().disableHtmlEscaping().create();
 
     private AppCompatButton mFlatWindowButton;
     private AppCompatButton mAccessibilityButton;

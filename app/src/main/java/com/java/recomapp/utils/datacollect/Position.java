@@ -55,6 +55,8 @@ public class Position {
         this.wifiIds = wifiIds;
     }
 
+    public void setId(String id) { this.id = id; }
+
     public double getGpsScore(Position position) {
         double score = 0;
         double distance = getDistance(position);
