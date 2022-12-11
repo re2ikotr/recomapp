@@ -242,6 +242,22 @@ public class MainActivity extends AppCompatActivity {
             }
             String result = new JSONObject(whiteList).toString();
             FileUtils.writeStringToFile(result, file, false);
+        } else {
+            Map<String, Boolean> whiteList = WhiteListActivity.getWhiteList();
+            PackageManager packageManager = this.getPackageManager();
+            List<PackageInfo> packageInfoList = packageManager.getInstalledPackages(0);
+            Map<String, Boolean> newList = new HashMap<>();
+            for (PackageInfo packageInfo: packageInfoList) {
+                if(CheckAppType.checkAppType(packageInfo.applicationInfo.packageName, packageManager) != CheckAppType.SYSTEM_APP) {
+                    if(whiteList.containsKey(packageInfo.applicationInfo.packageName)) {
+                        newList.put(packageInfo.applicationInfo.packageName, whiteList.get(packageInfo.applicationInfo.packageName));
+                    } else {
+                        newList.put(packageInfo.applicationInfo.packageName, true);
+                    }
+                }
+            }
+            String result = new JSONObject(newList).toString();
+            FileUtils.writeStringToFile(result, file, false);
         }
     }
 }

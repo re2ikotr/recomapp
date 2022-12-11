@@ -58,7 +58,7 @@ public class AppAdapter extends ArrayAdapter<WhiteListEntry>{
             if (packageInfo.applicationInfo.packageName.equals(app_entry.getPackage_name())) {
                 app_icon.setImageDrawable(packageInfo.applicationInfo.loadIcon(packageManager));
                 app_name.setText(packageInfo.applicationInfo.loadLabel(packageManager).toString());
-                app_check.setChecked(app_entry.getIs_in_whitelist());
+
                 app_check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -68,13 +68,16 @@ public class AppAdapter extends ArrayAdapter<WhiteListEntry>{
                         } else {
                             Log.i("whitelist_check", "package doesn't exist");
                         }
-
+                        app_entry.is_in_whitelist = isChecked;
+                        app_check.setChecked(isChecked);
                         String FILENAME = "whitelist.txt";
                         File file = new File(MainActivity.FILE_FOLDER + FILENAME);
                         String result = new JSONObject(whiteList).toString();
                         FileUtils.writeStringToFile(result, file, false);
                     }
                 });
+
+                app_check.setChecked(app_entry.is_in_whitelist);
             }
         }
 
