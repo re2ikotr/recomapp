@@ -56,10 +56,18 @@ public class MainActivity extends AppCompatActivity {
     private AppCompatButton mFlatWindowButton;
     private AppCompatButton mAccessibilityButton;
     private LinearLayout other_ui_container;
+    private LinearLayout switch_container;
     private TextView activate_service_hint;
     private Button btn_grant_permission;
     private SwitchCompat enable_decision_tree;
+    private SwitchCompat enable_time;
+    private SwitchCompat enable_app;
+    private SwitchCompat enable_device;
+    private SwitchCompat enable_noise;
+    private SwitchCompat enable_position;
+    private SwitchCompat enable_steps;
 
+    private boolean[] validFeatureList;
     private boolean is_gps_on, is_bt_on, is_mic_on, is_wifi_on;
     // 要申请的权限
     private String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.RECORD_AUDIO};
@@ -78,20 +86,90 @@ public class MainActivity extends AppCompatActivity {
         flatWindowVisible();
         initWhiteList();
 
-        btn_grant_permission = findViewById(R.id.btn_grant_permission);
-        setPermissionBtn();
+        validFeatureList = new boolean[]{true, true, true, true, true, true};
+        switch_container = findViewById(R.id.switch_container);
+        enable_time = findViewById(R.id.enable_time);
+        enable_time.setChecked(true);
+        enable_time.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    validFeatureList[0] = true;
+                }else {
+                    validFeatureList[0] = false;
+                }
+            }
+        });
+        enable_app = findViewById(R.id.enable_app);
+        enable_app.setChecked(true);
+        enable_app.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    validFeatureList[1] = true;
+                }else {
+                    validFeatureList[1] = false;
+                }
+            }
+        });
+        enable_device = findViewById(R.id.enable_device);
+        enable_device.setChecked(true);
+        enable_device.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    validFeatureList[2] = true;
+                }else {
+                    validFeatureList[2] = false;
+                }
+            }
+        });
+        enable_noise = findViewById(R.id.enable_noise);
+        enable_noise.setChecked(true);
+        enable_noise.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    validFeatureList[3] = true;
+                }else {
+                    validFeatureList[3] = false;
+                }
+            }
+        });
+        enable_position = findViewById(R.id.enable_position);
+        enable_position.setChecked(true);
+        enable_position.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    validFeatureList[4] = true;
+                }else {
+                    validFeatureList[4] = false;
+                }
+            }
+        });
+        enable_steps = findViewById(R.id.enable_steps);
+        enable_steps.setChecked(true);
+        enable_steps.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    validFeatureList[5] = true;
+                }else {
+                    validFeatureList[5] = false;
+                }
+            }
+        });
 
         enable_decision_tree = findViewById(R.id.enable_decision_tree);
         enable_decision_tree.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked){
-                    btn_grant_permission.setVisibility(View.VISIBLE);
-                }else {
-                    btn_grant_permission.setVisibility(View.GONE);
-                }
+                setPermissionBtn();
             }
         });
+        btn_grant_permission = findViewById(R.id.btn_grant_permission);
+        setPermissionBtn();
     }
 
     /**
@@ -155,20 +233,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * 检查当前权限获取情况，设置按钮的 Enabled 情况
+     * 检查当前权限获取情况，设置按钮的 Visible 情况
      */
     private void setPermissionBtn() {
+        Log.d("test","is_checked: " + enable_decision_tree.isChecked());
+        if (!enable_decision_tree.isChecked()) {
+            btn_grant_permission.setVisibility(View.GONE);
+            switch_container.setVisibility(View.GONE);
+            return;
+        }
         int i = ContextCompat.checkSelfPermission(getApplicationContext(), permissions[0]);
         int l = ContextCompat.checkSelfPermission(getApplicationContext(), permissions[1]);
         // 权限是否已经 授权 GRANTED---授权  DINIED---拒绝
         if (i != PackageManager.PERMISSION_GRANTED || l != PackageManager.PERMISSION_GRANTED) {
-            btn_grant_permission.setEnabled(true);
+            btn_grant_permission.setVisibility(View.VISIBLE);
+            switch_container.setVisibility(View.GONE);
         }
         else {
-            btn_grant_permission.setEnabled(false);
+            btn_grant_permission.setVisibility(View.GONE);
+            switch_container.setVisibility(View.VISIBLE);
         }
     }
 
+    /**
+     * 点击 btn_grant_permission 触发获取权限
+     */
     public void grantPermission(View view) {
         int i = ContextCompat.checkSelfPermission(getApplicationContext(), permissions[0]);
         int l = ContextCompat.checkSelfPermission(getApplicationContext(), permissions[1]);

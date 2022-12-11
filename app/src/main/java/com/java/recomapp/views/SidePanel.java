@@ -100,6 +100,7 @@ public class SidePanel implements View.OnClickListener {
         });
 
 
+        // 从所有的<包名-次数>对中剔除系统包名并排序
         Map<String, Integer> appCount = SideBarService.app_count;
         appList = new ArrayList<>();
         if(appCount != null) {
