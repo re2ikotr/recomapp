@@ -58,6 +58,10 @@ public class MotionManager {
     }
 
     public int getStepCount() {
+        // TODO wz 根据过去10s的步数区分当前的运动状态
+        // 0：静止
+        // 1：走路
+        // 2：跑步
         return step_10s;
     }
 }
