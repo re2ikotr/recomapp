@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/bg"
+    android:orientation="vertical"
+    tools:context=".whitelist.WhiteListActivity">
+
+    <LinearLayout
+        android:id="@+id/other_ui_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="5dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="10dp">
+            <Button
+                android:id="@+id/btn_return_main"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="returnMain"
+                android:background="@drawable/bg_back_button"
+                android:layout_gravity="center"
+                android:minWidth="0dp"
+                android:minHeight="0dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dp"
+                android:textSize="30dp"
+                android:textColor="@color/black"
+                android:text="允许被推荐的应用"/>
+
+        </LinearLayout>
+
+
+
+        <ListView
+            android:id="@+id/white_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingHorizontal="20dp"
+            android:divider="@drawable/listview_divider"
+            android:dividerHeight="1dp"/>
+
+
+    </LinearLayout>
+
+</LinearLayout>

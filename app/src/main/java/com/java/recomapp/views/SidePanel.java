@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.java.recomapp.R;
 import com.java.recomapp.SideBarService;
 import com.java.recomapp.utils.PermissionUtil;
+import com.java.recomapp.whitelist.WhiteListActivity;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -117,6 +118,9 @@ public class SidePanel implements View.OnClickListener {
 
         packageManager = mContext.getPackageManager();
         packageInfoList = packageManager.getInstalledPackages(0);
+
+        Map<String, Boolean> whiteList = WhiteListActivity.getWhiteList();
+
         // To get a certain app's icon (like meituan), and link the imageView with that app, use:
         ImageView imageView1 = mContentView.findViewById(R.id.app1);
         ImageView imageView2 = mContentView.findViewById(R.id.app2);
@@ -133,7 +137,8 @@ public class SidePanel implements View.OnClickListener {
             }
         });
         for (PackageInfo packageInfo: packageInfoList) {
-            if (appList.size() > 0 && packageInfo.applicationInfo.packageName.equals(appList.get(0).getKey())) {
+            if (appList.size() > 0 && packageInfo.applicationInfo.packageName.equals(appList.get(0).getKey())
+                    && (whiteList.containsKey(appList.get(0).getKey()) && whiteList.get(appList.get(0).getKey()) == true)) {
                 String app1 = appList.get(0).getKey();
                 imageView1.setImageDrawable(packageInfo.applicationInfo.loadIcon(packageManager));
                 imageView1.setOnClickListener(new View.OnClickListener() {
@@ -143,7 +148,8 @@ public class SidePanel implements View.OnClickListener {
                     }
                 });
             }
-            if (appList.size() > 1 && packageInfo.applicationInfo.packageName.equals(appList.get(1).getKey())) {
+            if (appList.size() > 1 && packageInfo.applicationInfo.packageName.equals(appList.get(1).getKey())
+                    && (whiteList.containsKey(appList.get(1).getKey()) && whiteList.get(appList.get(1).getKey()) == true)) {
                 String app2 = appList.get(1).getKey();
                 imageView2.setImageDrawable(packageInfo.applicationInfo.loadIcon(packageManager));
                 imageView2.setOnClickListener(new View.OnClickListener() {
@@ -153,7 +159,8 @@ public class SidePanel implements View.OnClickListener {
                     }
                 });
             }
-            if (appList.size() > 2 && packageInfo.applicationInfo.packageName.equals(appList.get(2).getKey())) {
+            if (appList.size() > 2 && packageInfo.applicationInfo.packageName.equals(appList.get(2).getKey())
+                    && (whiteList.containsKey(appList.get(2).getKey()) && whiteList.get(appList.get(2).getKey()) == true)) {
                 String app3 = appList.get(2).getKey();
                 imageView3.setImageDrawable(packageInfo.applicationInfo.loadIcon(packageManager));
                 imageView3.setOnClickListener(new View.OnClickListener() {
@@ -163,7 +170,8 @@ public class SidePanel implements View.OnClickListener {
                     }
                 });
             }
-            if (appList.size() > 3 && packageInfo.applicationInfo.packageName.equals(appList.get(3).getKey())) {
+            if (appList.size() > 3 && packageInfo.applicationInfo.packageName.equals(appList.get(3).getKey())
+                    && (whiteList.containsKey(appList.get(3).getKey()) && whiteList.get(appList.get(3).getKey()) == true)) {
                 String app4 = appList.get(3).getKey();
                 imageView4.setImageDrawable(packageInfo.applicationInfo.loadIcon(packageManager));
                 imageView4.setOnClickListener(new View.OnClickListener() {
@@ -173,7 +181,8 @@ public class SidePanel implements View.OnClickListener {
                     }
                 });
             }
-            if (appList.size() > 4 && packageInfo.applicationInfo.packageName.equals(appList.get(4).getKey())) {
+            if (appList.size() > 4 && packageInfo.applicationInfo.packageName.equals(appList.get(4).getKey())
+                    && (whiteList.containsKey(appList.get(4).getKey()) && whiteList.get(appList.get(4).getKey()) == true)) {
                 String app5 = appList.get(4).getKey();
                 imageView5.setImageDrawable(packageInfo.applicationInfo.loadIcon(packageManager));
                 imageView5.setOnClickListener(new View.OnClickListener() {

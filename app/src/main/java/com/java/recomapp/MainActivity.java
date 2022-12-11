@@ -1,14 +1,18 @@
 package com.java.recomapp;
 
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -17,7 +21,17 @@ import androidx.appcompat.widget.AppCompatButton;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.java.recomapp.utils.CheckAppType;
+import com.java.recomapp.utils.FileUtils;
 import com.java.recomapp.utils.PermissionUtil;
+import com.java.recomapp.whitelist.WhiteListActivity;
+
+import org.json.JSONObject;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * home page
@@ -34,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView activate_service_hint;
     private static final int FLAT_REQUEST_CODE = 213;
     private static final int ACCESSIBILITY_REQUEST_CODE = 438;
+    private static final int WHITELIST_REQUEST_CODE = 403;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
         other_ui_container.setVisibility(View.GONE);
         activate_service_hint = findViewById(R.id.activate_service_hint);
         flatWindowVisible();
+        initWhiteList();
     }
 
     /**
@@ -114,5 +130,34 @@ public class MainActivity extends AppCompatActivity {
      * 此函数用来将其删除。
      */
     public void clearLocalCache() {
+    }
+
+    /**
+     * go to app white list settings
+     */
+    public void gotoWhiteList(View view) {
+        Intent intent = new Intent(MainActivity.this, WhiteListActivity.class);
+        startActivityForResult(intent, WHITELIST_REQUEST_CODE);
+
+    }
+
+    /**
+     * init app white list file
+     */
+    public void initWhiteList() {
+        String FILENAME = "whitelist.txt";
+        File file = new File(FILE_FOLDER + FILENAME);
+        if(!file.exists()) {
+            Map<String, Boolean> whiteList = new HashMap<>();
+            PackageManager packageManager = this.getPackageManager();
+            List<PackageInfo> packageInfoList = packageManager.getInstalledPackages(0);
+            for (PackageInfo packageInfo: packageInfoList) {
+                if(CheckAppType.checkAppType(packageInfo.applicationInfo.packageName, packageManager) != CheckAppType.SYSTEM_APP) {
+                    whiteList.put(packageInfo.applicationInfo.packageName, true);
+                }
+            }
+            String result = new JSONObject(whiteList).toString();
+            FileUtils.writeStringToFile(result, file, false);
+        }
     }
 }

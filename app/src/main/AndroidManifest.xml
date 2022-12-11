@@ -37,6 +37,10 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".whitelist.WhiteListActivity">
+
+        </activity>
+
         <receiver
             android:name=".DeviceBootReceiver"
             android:exported="true">
