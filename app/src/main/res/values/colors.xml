@@ -9,4 +9,6 @@
     <color name="color_main">#32e8fe</color>
     <color name="border_bar">#555f7f</color>
     <color name="bg">#f6f7ff</color>
+
+    <color name="black"> #000000</color>
 </resources>
