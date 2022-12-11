@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     public static String FILE_FOLDER;
     private static final int FLAT_REQUEST_CODE = 213;
     private static final int ACCESSIBILITY_REQUEST_CODE = 438;
+    private static final int WHITELIST_REQUEST_CODE = 403;
     public static final Gson gson = new GsonBuilder().disableHtmlEscaping().create();
 
     private AppCompatButton mFlatWindowButton;
@@ -76,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
         other_ui_container.setVisibility(View.GONE);
         activate_service_hint = findViewById(R.id.activate_service_hint);
         flatWindowVisible();
+        initWhiteList();
 
         btn_grant_permission = findViewById(R.id.btn_grant_permission);
         setPermissionBtn();
