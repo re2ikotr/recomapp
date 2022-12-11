@@ -46,7 +46,6 @@ import java.util.Map;
  *
  * @author majh
  */
-@RequiresApi(api = Build.VERSION_CODES.S)
 public class MainActivity extends AppCompatActivity {
     public static String FILE_FOLDER;
     private static final int FLAT_REQUEST_CODE = 213;
