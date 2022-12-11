@@ -45,19 +45,46 @@
             android:text="前往关闭推荐服务" />
 
         <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/enable_decision_tree"
+            android:id="@+id/permission_gps"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="48dp"
             android:text="是否使用智能推荐" />
 
-        <Button
-            android:id="@+id/btn_grant_permission"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="grantPermission"
-            android:visibility="gone"
-            android:text="检查并开启权限" />
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/permission_gps"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="30dp"
+                android:text="是否使用智能推荐" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/permission_bt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="30dp"
+                android:textColor="@android:color/system_accent2_500"
+                android:text="是否使用智能推荐" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/permission_mic"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="30dp"
+                android:text="是否使用智能推荐" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/permission_imu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="30dp"
+                android:text="是否使用智能推荐" />
+        </LinearLayout>
 
         <Button
             android:id="@+id/button"
@@ -66,15 +93,6 @@
             android:layout_marginTop="30dp"
             android:onClick="clearLocalCache"
             android:text="清除本地缓存" />
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btn_to_white_list"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:onClick="gotoWhiteList"
-            android:text="设置应用白名单" />
-
     </LinearLayout>
 
 </LinearLayout>

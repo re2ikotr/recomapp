@@ -1,23 +1,31 @@
 package com.java.recomapp;
 
+import android.Manifest;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -38,17 +46,23 @@ import java.util.Map;
  *
  * @author majh
  */
+@RequiresApi(api = Build.VERSION_CODES.S)
 public class MainActivity extends AppCompatActivity {
     public static String FILE_FOLDER;
+    private static final int FLAT_REQUEST_CODE = 213;
+    private static final int ACCESSIBILITY_REQUEST_CODE = 438;
     public static final Gson gson = new GsonBuilder().disableHtmlEscaping().create();
 
     private AppCompatButton mFlatWindowButton;
     private AppCompatButton mAccessibilityButton;
     private LinearLayout other_ui_container;
     private TextView activate_service_hint;
-    private static final int FLAT_REQUEST_CODE = 213;
-    private static final int ACCESSIBILITY_REQUEST_CODE = 438;
-    private static final int WHITELIST_REQUEST_CODE = 403;
+    private Button btn_grant_permission;
+    private SwitchCompat enable_decision_tree;
+
+    private boolean is_gps_on, is_bt_on, is_mic_on, is_wifi_on;
+    // 要申请的权限
+    private String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.RECORD_AUDIO};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +76,21 @@ public class MainActivity extends AppCompatActivity {
         other_ui_container.setVisibility(View.GONE);
         activate_service_hint = findViewById(R.id.activate_service_hint);
         flatWindowVisible();
-        initWhiteList();
+
+        btn_grant_permission = findViewById(R.id.btn_grant_permission);
+        setPermissionBtn();
+
+        enable_decision_tree = findViewById(R.id.enable_decision_tree);
+        enable_decision_tree.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    btn_grant_permission.setVisibility(View.VISIBLE);
+                }else {
+                    btn_grant_permission.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
     /**
@@ -126,10 +154,64 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * 检查当前权限获取情况，设置按钮的 Enabled 情况
+     */
+    private void setPermissionBtn() {
+        int i = ContextCompat.checkSelfPermission(getApplicationContext(), permissions[0]);
+        int l = ContextCompat.checkSelfPermission(getApplicationContext(), permissions[1]);
+        // 权限是否已经 授权 GRANTED---授权  DINIED---拒绝
+        if (i != PackageManager.PERMISSION_GRANTED || l != PackageManager.PERMISSION_GRANTED) {
+            btn_grant_permission.setEnabled(true);
+        }
+        else {
+            btn_grant_permission.setEnabled(false);
+        }
+    }
+
+    public void grantPermission(View view) {
+        int i = ContextCompat.checkSelfPermission(getApplicationContext(), permissions[0]);
+        int l = ContextCompat.checkSelfPermission(getApplicationContext(), permissions[1]);
+        // 权限是否已经 授权 GRANTED---授权  DINIED---拒绝
+        if (i != PackageManager.PERMISSION_GRANTED || l != PackageManager.PERMISSION_GRANTED) {
+            // 如果没有授予该权限，就去提示用户请求
+            startRequestPermission();
+        }
+    }
+
+    /**
      * 按打开次数的简单推荐算法，次数统计信息存在本地文件。
      * 此函数用来将其删除。
      */
-    public void clearLocalCache() {
+    public void clearLocalCache(View view) {
+
+    }
+
+    /**
+     * 开始提交请求权限
+     */
+    private void startRequestPermission() {
+        ActivityCompat.requestPermissions(this, permissions, 321);
+    }
+
+    /**
+     * 用户权限申请的回调方法
+     * @param requestCode: int
+     * @param permissions: string[]
+     * @param grantResults: int[]
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 321) {
+            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                //如果没有获取权限，那么可以提示用户去设置界面--->应用权限开启权限
+            } else {
+                //获取权限成功提示，可以不要
+                Toast toast = Toast.makeText(this, "获取GPS, 麦克风权限成功", Toast.LENGTH_LONG);
+                toast.show();
+            }
+            setPermissionBtn();
+        }
     }
 
     /**
