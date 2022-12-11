@@ -57,10 +57,67 @@
             android:layout_height="wrap_content"
             android:onClick="grantPermission"
             android:visibility="gone"
-            android:text="检查并开启权限" />
+            android:text="要使用智能推荐，请打开相应权限" />
+
+        <LinearLayout
+            android:id="@+id/switch_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/enable_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="35dp"
+                android:textColor="#606060"
+                android:text="输入时间" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/enable_app"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="35dp"
+                android:textColor="#606060"
+                android:text="输入APP" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/enable_device"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="35dp"
+                android:textColor="#606060"
+                android:text="输入设备" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/enable_noise"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="35dp"
+                android:textColor="#606060"
+                android:text="输入噪音" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/enable_position"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="35dp"
+                android:textColor="#606060"
+                android:text="输入地点" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/enable_steps"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="35dp"
+                android:textColor="#606060"
+                android:text="输入运动数据" />
+
+        </LinearLayout>
 
         <Button
-            android:id="@+id/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
