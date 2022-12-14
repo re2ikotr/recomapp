@@ -67,8 +67,8 @@ public class MainActivity extends AppCompatActivity {
     private SwitchCompat enable_position;
     private SwitchCompat enable_steps;
 
-    private boolean[] validFeatureList;
-    private boolean is_gps_on, is_bt_on, is_mic_on, is_wifi_on;
+    public static boolean[] validFeatureList; // 决策树考虑的因素
+    public static boolean useDecisionTree;    // 是否用决策树算法
     // 要申请的权限
     private String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.RECORD_AUDIO};
 
@@ -166,6 +166,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 setPermissionBtn();
+                if (enable_decision_tree.isChecked()) {
+                    useDecisionTree = true;
+                }
+                else {
+                    useDecisionTree = false;
+                }
             }
         });
         btn_grant_permission = findViewById(R.id.btn_grant_permission);
