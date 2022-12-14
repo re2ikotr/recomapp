@@ -24,6 +24,7 @@ public class DeviceManager {
     private Context mContext;
 
     public DeviceManager(Context context, ScheduledExecutorService executorService) {
+        mContext = context;
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         bluetoothManager = (BluetoothManager) mContext.getSystemService(Context.BLUETOOTH_SERVICE);
     }

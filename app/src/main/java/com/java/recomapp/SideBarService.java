@@ -10,8 +10,11 @@ import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.LinearLayout;
 
+import com.java.recomapp.decisiontree.Decision;
 import com.java.recomapp.utils.FileUtils;
 import com.java.recomapp.views.FloatButton;
+import com.java.recomapp.whitelist.WhiteListActivity;
+import com.java.recomapp.whitelist.WhiteListEntry;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,10 +27,18 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * a service to help user simulate click event
@@ -46,6 +57,7 @@ public class SideBarService extends AccessibilityService {
     public static Map<String, Integer> app_count;
     public static String last_packageName = "";
     public static String last_last_packageName = "";
+    public static Decision decisionTree;
     public static final List<String> systemPackages = new ArrayList<>(Arrays.asList(
             "com.android.systemui",
             "com.huawei.android.launcher",
@@ -80,6 +92,105 @@ public class SideBarService extends AccessibilityService {
     public void onCreate() {
         super.onCreate();
         createToucher();
+
+        ScheduledExecutorService executorService = new ScheduledExecutorService() {
+            @Override
+            public ScheduledFuture<?> schedule(Runnable runnable, long l, TimeUnit timeUnit) {
+                return null;
+            }
+
+            @Override
+            public <V> ScheduledFuture<V> schedule(Callable<V> callable, long l, TimeUnit timeUnit) {
+                return null;
+            }
+
+            @Override
+            public ScheduledFuture<?> scheduleAtFixedRate(Runnable runnable, long l, long l1, TimeUnit timeUnit) {
+                return null;
+            }
+
+            @Override
+            public ScheduledFuture<?> scheduleWithFixedDelay(Runnable runnable, long l, long l1, TimeUnit timeUnit) {
+                return null;
+            }
+
+            @Override
+            public void shutdown() {
+
+            }
+
+            @Override
+            public List<Runnable> shutdownNow() {
+                return null;
+            }
+
+            @Override
+            public boolean isShutdown() {
+                return false;
+            }
+
+            @Override
+            public boolean isTerminated() {
+                return false;
+            }
+
+            @Override
+            public boolean awaitTermination(long l, TimeUnit timeUnit) throws InterruptedException {
+                return false;
+            }
+
+            @Override
+            public <T> Future<T> submit(Callable<T> callable) {
+                return null;
+            }
+
+            @Override
+            public <T> Future<T> submit(Runnable runnable, T t) {
+                return null;
+            }
+
+            @Override
+            public Future<?> submit(Runnable runnable) {
+                return null;
+            }
+
+            @Override
+            public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> collection) throws InterruptedException {
+                return null;
+            }
+
+            @Override
+            public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> collection, long l, TimeUnit timeUnit) throws InterruptedException {
+                return null;
+            }
+
+            @Override
+            public <T> T invokeAny(Collection<? extends Callable<T>> collection) throws ExecutionException, InterruptedException {
+                return null;
+            }
+
+            @Override
+            public <T> T invokeAny(Collection<? extends Callable<T>> collection, long l, TimeUnit timeUnit) throws ExecutionException, InterruptedException, TimeoutException {
+                return null;
+            }
+
+            @Override
+            public void execute(Runnable runnable) {
+
+            }
+        };
+        Log.i(TAG, "onCreate: before decision");
+        decisionTree = new Decision(this, executorService);
+        Log.i(TAG, "onCreate: after decision");
+        Map<String, Boolean> whitelist_map = WhiteListActivity.getWhiteList();
+        List<String> accessibleApps = new ArrayList<>();
+        whitelist_map.forEach((name, is_checked) -> {
+            WhiteListEntry entry = new WhiteListEntry(name, is_checked);
+            if(entry.is_in_whitelist) {
+                accessibleApps.add(entry.getPackage_name());
+            }
+        });
+        decisionTree.setAccessAppNameList(accessibleApps);
     }
 
     @SuppressLint({"RtlHardcoded", "InflateParams"})
@@ -123,6 +234,8 @@ public class SideBarService extends AccessibilityService {
                 last_last_packageName = last_packageName;
                 last_packageName = packageName;
                 saveMap(app_count);
+
+                decisionTree.update(packageName);
             }
         }
     }
@@ -137,6 +250,7 @@ public class SideBarService extends AccessibilityService {
     public void onServiceConnected() {
         Log.i(TAG, "onServiceConnected: ");
         app_count = getMap();
+
         Log.e(TAG, new JSONObject(app_count).toString());
     };
 
