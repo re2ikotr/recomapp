@@ -40,7 +40,7 @@ public class SidePanel implements View.OnClickListener {
 
     private Context mContext;
     private boolean mLeft;
-//    private LinearLayout mContentView;
+    //    private LinearLayout mContentView;
     private androidx.constraintlayout.widget.ConstraintLayout mContentView;
     private WindowManager mWindowManager;
     private LinearLayout mArrowView;
@@ -51,7 +51,7 @@ public class SidePanel implements View.OnClickListener {
     private Button exit_button;
     private int mTagTemp = -1;
 
-    private ArrayList<Map.Entry<String, Integer>> appList;
+    private ArrayList<Map.Entry<String, Integer>> appList_temp;
     private PackageManager packageManager;
     private List<PackageInfo> packageInfoList;
     private String TAG = "side_panel";
@@ -74,12 +74,12 @@ public class SidePanel implements View.OnClickListener {
     };
 
     androidx.constraintlayout.widget.ConstraintLayout getView(Context context,
-                         boolean left,
-                         WindowManager windowManager,
-                         WindowManager.LayoutParams params,
-                         LinearLayout arrowView,
-                         SideBarService sideBarService,
-                         LinearLayout anotherArrowView) {
+                                                              boolean left,
+                                                              WindowManager windowManager,
+                                                              WindowManager.LayoutParams params,
+                                                              LinearLayout arrowView,
+                                                              SideBarService sideBarService,
+                                                              LinearLayout anotherArrowView) {
         mContext = context;
         mLeft = left;
         mWindowManager = windowManager;
@@ -102,20 +102,27 @@ public class SidePanel implements View.OnClickListener {
 
         // 从所有的<包名-次数>对中剔除系统包名并排序
         Map<String, Integer> appCount = SideBarService.app_count;
-        appList = new ArrayList<>();
+        appList_temp = new ArrayList<>();
         if(appCount != null) {
-            appList = new ArrayList<Map.Entry<String, Integer>>(appCount.entrySet());
-            for(int i = 0; i < appList.size(); i++) {
-                if(SideBarService.systemPackages.contains(appList.get(i).getKey())) {
-                    appList.get(i).setValue(0);
+            appList_temp = new ArrayList<Map.Entry<String, Integer>>(appCount.entrySet());
+            for(int i = 0; i < appList_temp.size(); i++) {
+                if(SideBarService.systemPackages.contains(appList_temp.get(i).getKey())) {
+                    appList_temp.get(i).setValue(0);
                 }
             }
-            Collections.sort(appList, new Comparator<Map.Entry<String, Integer>>() {
+            Collections.sort(appList_temp, new Comparator<Map.Entry<String, Integer>>() {
                 public int compare(Map.Entry<String, Integer> e1, Map.Entry<String, Integer> e2) {
                     return (e2.getValue() - e1.getValue());
                 }
             });
         }
+
+        List<String> appList = new ArrayList<>();
+        for(int i = 0; i < appList_temp.size(); i++) {
+            appList.add(appList_temp.get(i).getKey());
+        }
+
+        appList = SideBarService.decisionTree.predict();
 
         packageManager = mContext.getPackageManager();
         packageInfoList = packageManager.getInstalledPackages(0);
@@ -138,9 +145,9 @@ public class SidePanel implements View.OnClickListener {
             }
         });
         for (PackageInfo packageInfo: packageInfoList) {
-            if (appList.size() > 0 && packageInfo.applicationInfo.packageName.equals(appList.get(0).getKey())
-                    && (whiteList.containsKey(appList.get(0).getKey()) && whiteList.get(appList.get(0).getKey()) == true)) {
-                String app1 = appList.get(0).getKey();
+            if (appList.size() > 0 && packageInfo.applicationInfo.packageName.equals(appList.get(0))
+                    && (whiteList.containsKey(appList.get(0)) && whiteList.get(appList.get(0)) == true)) {
+                String app1 = appList.get(0);
                 imageView1.setImageDrawable(packageInfo.applicationInfo.loadIcon(packageManager));
                 imageView1.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -149,9 +156,9 @@ public class SidePanel implements View.OnClickListener {
                     }
                 });
             }
-            if (appList.size() > 1 && packageInfo.applicationInfo.packageName.equals(appList.get(1).getKey())
-                    && (whiteList.containsKey(appList.get(1).getKey()) && whiteList.get(appList.get(1).getKey()) == true)) {
-                String app2 = appList.get(1).getKey();
+            if (appList.size() > 1 && packageInfo.applicationInfo.packageName.equals(appList.get(1))
+                    && (whiteList.containsKey(appList.get(1)) && whiteList.get(appList.get(1)) == true)) {
+                String app2 = appList.get(1);
                 imageView2.setImageDrawable(packageInfo.applicationInfo.loadIcon(packageManager));
                 imageView2.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -160,9 +167,9 @@ public class SidePanel implements View.OnClickListener {
                     }
                 });
             }
-            if (appList.size() > 2 && packageInfo.applicationInfo.packageName.equals(appList.get(2).getKey())
-                    && (whiteList.containsKey(appList.get(2).getKey()) && whiteList.get(appList.get(2).getKey()) == true)) {
-                String app3 = appList.get(2).getKey();
+            if (appList.size() > 2 && packageInfo.applicationInfo.packageName.equals(appList.get(2))
+                    && (whiteList.containsKey(appList.get(2)) && whiteList.get(appList.get(2)) == true)) {
+                String app3 = appList.get(2);
                 imageView3.setImageDrawable(packageInfo.applicationInfo.loadIcon(packageManager));
                 imageView3.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -171,9 +178,9 @@ public class SidePanel implements View.OnClickListener {
                     }
                 });
             }
-            if (appList.size() > 3 && packageInfo.applicationInfo.packageName.equals(appList.get(3).getKey())
-                    && (whiteList.containsKey(appList.get(3).getKey()) && whiteList.get(appList.get(3).getKey()) == true)) {
-                String app4 = appList.get(3).getKey();
+            if (appList.size() > 3 && packageInfo.applicationInfo.packageName.equals(appList.get(3))
+                    && (whiteList.containsKey(appList.get(3)) && whiteList.get(appList.get(3)) == true)) {
+                String app4 = appList.get(3);
                 imageView4.setImageDrawable(packageInfo.applicationInfo.loadIcon(packageManager));
                 imageView4.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -182,9 +189,9 @@ public class SidePanel implements View.OnClickListener {
                     }
                 });
             }
-            if (appList.size() > 4 && packageInfo.applicationInfo.packageName.equals(appList.get(4).getKey())
-                    && (whiteList.containsKey(appList.get(4).getKey()) && whiteList.get(appList.get(4).getKey()) == true)) {
-                String app5 = appList.get(4).getKey();
+            if (appList.size() > 4 && packageInfo.applicationInfo.packageName.equals(appList.get(4))
+                    && (whiteList.containsKey(appList.get(4)) && whiteList.get(appList.get(4)) == true)) {
+                String app5 = appList.get(4);
                 imageView5.setImageDrawable(packageInfo.applicationInfo.loadIcon(packageManager));
                 imageView5.setOnClickListener(new View.OnClickListener() {
                     @Override
