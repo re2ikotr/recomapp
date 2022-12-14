@@ -1,13 +1,14 @@
 package com.java.recomapp.decisiontree;
 import com.java.recomapp.SideBarService;
+import com.java.recomapp.utils.FileUtils;
 import com.java.recomapp.utils.datacollect.DeviceManager;
 import com.java.recomapp.utils.datacollect.MotionManager;
 import com.java.recomapp.utils.datacollect.NoiseManager;
 import com.java.recomapp.utils.datacollect.PositionManager;
-
 import android.content.Context;
-
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,22 +16,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 import java.util.Vector;
 import java.util.concurrent.ScheduledExecutorService;
-
-enum Algorithm{
-    ID3, C4_5, CART
-}
-
-class Features{
-    public static final int TIME=0;
-    public static final int APP=1;
-    public static final int DEVICE=2;
-    public static final int NOISE=3;
-    public static final int POSITION=4;
-    public static final int STEP=5;
-    public static final int INVALID=-1;
-}
 
 class TreeNode{
     public Map<Object, TreeNode> branches;
@@ -39,13 +27,6 @@ class TreeNode{
     public TreeNode(){
         feature = Features.INVALID;
         branches = new HashMap<>();
-    }
-
-    public void saveModel(String savePath){
-    }
-
-    public void loadModel(String loadPath){
-
     }
 }
 
@@ -61,11 +42,10 @@ class AppNameReturn{
         if(index == -1){
             appNameList.add(appName);
         } else {
-            appNameList.remove(index);
-            appNameList.add(appName);
+            return;
         }
         if(appNameList.size() > maxReturnNumber){
-            appNameList.remove(0);
+            appNameList.remove(maxReturnNumber);
         }
     }
 }
@@ -91,39 +71,102 @@ class Dataset{
         appCount.put(y, appCount.getOrDefault(y, 0)+1);
         positionCount.put(newPosition, positionCount.getOrDefault(newPosition, 0) + 1);
         if(yData.size() > maxDatasetSize){
-            String dropAppName = yData.get(0);
-            String dropPosition = (String) xData.get(0)[Features.POSITION];
-            int dropPositionCount = positionCount.getOrDefault(dropPosition, 0);
-            int dropAppCount = appCount.getOrDefault(dropAppName, 0);
-            if(dropAppCount <= 1){
-                appCount.remove(y);
-            }else{
-                appCount.put(dropAppName, dropAppCount-1);
-            }
-            if(dropPositionCount <= 1){
-                positionCount.remove(dropPosition);
-            }else{
-                positionCount.put(dropPosition, dropPositionCount - 1);
-            }
-
-            xData.remove(0);
-            yData.remove(0);
+            this.removeByIndex(0);
         }
     }
 
+    public void removeByIndex(int index){
+        if(index >= xData.size()){
+            return ;
+        }
+        String dropAppName = yData.get(index);
+        int dropAppCount = appCount.getOrDefault(dropAppName, 0);
+        String dropPosition = (String) xData.get(index)[Features.POSITION];
+        int dropPositionCount = positionCount.getOrDefault(dropPosition, 0);
+        if(dropAppCount <= 1){
+            appCount.remove(dropAppName);
+        }else{
+            appCount.put(dropAppName, dropAppCount-1);
+        }
+        if(dropPositionCount <= 1){
+            positionCount.remove(dropPosition);
+        }else{
+            positionCount.put(dropPosition, dropPositionCount - 1);
+        }
+        xData.remove(index);
+        yData.remove(index);
+    }
+
     public static Dataset loadDataset(String fileName){
-        return new Dataset(0);
+        File datasetFile = new File(fileName);
+        if(!datasetFile.canRead())
+            return null;
+        String datasetContent = FileUtils.getFileContent(fileName);
+        String[] lines = datasetContent.split("\n");
+        int datasetSize = Integer.parseInt(lines[0]);
+        Dataset d = new Dataset(datasetSize);
+        for(int i=1; i<lines.length; i++){
+            String line = lines[i];
+            String[] entryList = line.split(",");
+            Object[] x = new Object[6];
+            String y;
+            x[Features.TIME] = Integer.parseInt(entryList[Features.TIME]);
+            x[Features.APP] = entryList[Features.APP];
+            x[Features.DEVICE] = Integer.parseInt(entryList[Features.DEVICE]);
+            x[Features.NOISE] = Integer.parseInt(entryList[Features.NOISE]);
+            x[Features.POSITION] = entryList[Features.POSITION];
+            x[Features.STEP] = Integer.parseInt(entryList[Features.STEP]);
+            y = entryList[6];
+            d.update(x, y);
+        }
+        return d;
     }
 
     public void saveDataset(String fileName){
-
+        StringBuilder saveContent = new StringBuilder();
+        saveContent.append(this.maxDatasetSize);
+        saveContent.append("\n");
+        Iterator<Object[]> xIterator = xData.iterator();
+        Iterator<String> yIterator = yData.iterator();
+        while(xIterator.hasNext() && yIterator.hasNext()){
+            Object[] x = xIterator.next();
+            String y = yIterator.next();
+            for(int i=0; i<6; i++) {
+                saveContent.append(x[i].toString());
+                saveContent.append(",");
+            }
+            saveContent.append(y);
+            saveContent.append("\n");
+        }
+        FileUtils.writeStringToFile(saveContent.toString(), new File(fileName));
     }
 
+    public void setMaxDatasetSize(int datasetSize){
+        int removeNumber = this.xData.size() - datasetSize;
+        for(int i=datasetSize; i<removeNumber; i++){
+            this.removeByIndex(0);
+        }
+        this.maxDatasetSize = datasetSize;
+    }
+
+    public Dataset getSubDataset(List<String> accessAppNameList){
+        Dataset d = new Dataset(this.maxDatasetSize);
+        Iterator<Object[]> xIterator = xData.iterator();
+        Iterator<String> yIterator = yData.iterator();
+        while (xIterator.hasNext() && yIterator.hasNext()){
+            Object[] x = xIterator.next();
+            String y = yIterator.next();
+            if(accessAppNameList.contains(y)){
+                d.update(x, y);
+            }
+        }
+        return d;
+    }
 }
 
 public class Decision {
     TreeNode root;
-    Algorithm algorithm;
+    int algorithm = Algorithm.CART;
     // 训练数据中可用的feature
     List<String> accessAppNameList;
     Dataset dataset;
@@ -131,20 +174,29 @@ public class Decision {
     int returnAppCount = 5;
     int trainStep = 10;
     int datasetSize = 10000;
+    int updateCount = 0;
     DeviceManager deviceManager;
     MotionManager motionManager;
     NoiseManager noiseManager;
     PositionManager positionManager;
-
+    static final String datasetFilePath = "";
+    static final String modelConfigFilePath = "";
     /*
         初始化函数，需要提供一些参数来初始化我们的服务以读取手机中的一些数据（如位置，运动数据等等）
-        wzgg写的我也不太知道这两个参数什么意思，前端有问题去问wzgg
+        wzgg写的我也不太知道这两个参数什么意思
      */
     public Decision(Context context, ScheduledExecutorService executorService){
         this.deviceManager = new DeviceManager(context, executorService);
         this.motionManager = new MotionManager(context, executorService);
         this.noiseManager = new NoiseManager(context, executorService);
         this.positionManager = new PositionManager(context, executorService);
+        this.dataset = Dataset.loadDataset(datasetFilePath);
+        if(this.dataset == null){
+            this.dataset = new Dataset(datasetSize);
+            this.root = new TreeNode();
+        }else{
+            this.loadModel();
+        }
     }
 
     /*
@@ -152,6 +204,8 @@ public class Decision {
      */
     public void setDatasetSize(int datasetSize){
         this.datasetSize = datasetSize;
+        this.dataset.setMaxDatasetSize(datasetSize);
+        this.genTree(this.root, this.dataset.getSubDataset(this.accessAppNameList), this.validFeatureList);
     }
 
     /*
@@ -171,9 +225,9 @@ public class Decision {
     /*
         设置使用的决策树算法（共有三种，详见Algorithm类）
      */
-    public void setAlgorithm(Algorithm algorithm){
-        // TODO 重新训练决策树
+    public void setAlgorithm(int algorithm){
         this.algorithm = algorithm;
+        this.genTree(this.root, this.dataset.getSubDataset(this.accessAppNameList), this.validFeatureList);
     }
 
     /*
@@ -182,6 +236,7 @@ public class Decision {
  */
     public void setValidFeatureList(boolean[] valid){
         this.validFeatureList = valid;
+        this.genTree(this.root, this.dataset.getSubDataset(this.accessAppNameList), this.validFeatureList);
     }
 
     /*
@@ -190,14 +245,7 @@ public class Decision {
             但是有可能达不到，如果达不到前端需要用频率排名靠前的app填充
          */
     public List<String> predict() {
-        Object[] x = new Object[6];
-        x[Features.TIME] = this.getTime();
-        x[Features.APP] = this.getLastApp();
-        x[Features.DEVICE] = this.getDevice();
-        x[Features.NOISE] = this.getNoise();
-        x[Features.POSITION] = this.getPosition();
-        x[Features.STEP] = this.getStep();
-        return predict(x);
+        return predict(getX());
     }
 
     /*
@@ -225,29 +273,79 @@ public class Decision {
      */
     public void setAccessAppNameList(List<String> validAppNameList){
         this.accessAppNameList = validAppNameList;
-        /*
-            1.把我的数据集更新一遍，把不再appNameList中的数据全部剔除
-            2.我不会更新我的数据集，在每条数据送到训练的地方的时候去判断在不在appNameList中
-         */
-        saveModel();
+        this.genTree(this.root, this.dataset.getSubDataset(this.accessAppNameList), this.validFeatureList);
     }
 
     /*
         传递给后端在validAppNameList中的当前用户打开的app的名称
-        后端会调用一些接口读取当前有权限获取的数据，
+        make sure that the app name is in validAppNameList
+        注意在调用这个函数的时候后端会根据权限去读取当前的手机数据
+        所以应该在点击时间到来时立刻调用该函数，如果等待的时间过长收集到的数据不准确
      */
     public void update(String appName){
-
+        this.updateCount %= this.trainStep;
+        this.updateCount += 1;
+        this.dataset.update(getX(), appName);
+        if(this.updateCount == this.trainStep){
+            this.dataset.saveDataset(Decision.datasetFilePath);
+            this.saveModel();
+            this.genTree(this.root, this.dataset.getSubDataset(this.accessAppNameList), this.validFeatureList);
+        }
     }
 
     /*
         调用该接口会存储当前模型的本身的所有数据，可以过一定的时间就做一次save
      */
     public void saveModel(){
-
+        StringBuilder saveContent = new StringBuilder();
+        saveContent.append(this.datasetSize);
+        saveContent.append("\n");
+        saveContent.append(this.returnAppCount);
+        saveContent.append("\n");
+        saveContent.append(this.trainStep);
+        saveContent.append("\n");
+        saveContent.append(this.algorithm);
+        saveContent.append("\n");
+        saveContent.append(String.join(",", this.accessAppNameList));
+        saveContent.append("\n");
+        saveContent.append(this.validFeatureList[0]);
+        for(int i=1; i<6; i++){
+            saveContent.append(",");
+            saveContent.append(this.validFeatureList[i]);
+        }
     }
 
-    protected void loadModel(){}
+    protected void loadModel(){
+        File inStream = new File(modelConfigFilePath);
+        if(!inStream.canRead()){
+            return ;
+        }
+        String[] content = FileUtils.getFileContent(modelConfigFilePath).split("\n");
+        this.datasetSize = Integer.parseInt(content[0]);
+        this.returnAppCount = Integer.parseInt(content[1]);
+        this.trainStep = Integer.parseInt(content[2]);
+        this.algorithm = Integer.parseInt(content[3]);
+        String[] appNameArray = content[4].split(",");
+        this.accessAppNameList = new ArrayList<>(Arrays.asList(appNameArray));
+        this.validFeatureList = new boolean[6];
+        String[] validFeatureArray = content[5].split(",");
+        for(int i=0; i<6; i++){
+            this.validFeatureList[i] = validFeatureArray[i].equals("true");
+        }
+        this.root = new TreeNode();
+        this.genTree(this.root, this.dataset.getSubDataset(this.accessAppNameList), this.validFeatureList);
+    }
+
+    protected Object[] getX(){
+        Object[] x = new Object[6];
+        x[Features.TIME] = this.getTime();
+        x[Features.APP] = this.getLastApp();
+        x[Features.DEVICE] = this.getDevice();
+        x[Features.NOISE] = this.getNoise();
+        x[Features.POSITION] = this.getPosition();
+        x[Features.STEP] = this.getStep();
+        return x;
+    }
 
     protected void genTree(TreeNode rootNode, Dataset data, boolean[] validList){
         boolean isSameAppName = this.checkSameAppName(data.appCount);
@@ -414,11 +512,7 @@ public class Decision {
         List<Integer> deviceList = deviceManager.getDevices();
         int result = 0;
         boolean[] deviceExist = new boolean[11];
-        Vector<Integer> deviceNumberList = new Vector<Integer>(11);
-        int[] deviceNumberArray = new int[]{1024, 256, 2304, 1536, 0, 768, 1280, 512, 2048, 7936, 1792};
-        for(int i=0; i<11; i++){
-            deviceNumberList.add(deviceNumberArray[i]);
-        }
+        Vector<Integer> deviceNumberList = new Vector<>(Arrays.asList(1024, 256, 2304, 1536, 0, 768, 1280, 512, 2048, 7936, 1792));
 
         for(int i=0; i<11; i++){
             deviceExist[i] = false;
@@ -470,13 +564,24 @@ public class Decision {
     protected List<String> predict(Object[] x){
         TreeNode currentNode = this.root;
         AppNameReturn result = new AppNameReturn(this.returnAppCount);
-        result.add(this.root.appName);
+        Stack<TreeNode> stack = new Stack<>();
+        stack.add(this.root);
         while (true){
             TreeNode subNode = currentNode.branches.get(x[currentNode.feature]);
             if (subNode == null){
                 break;
             }else{
+                stack.add(subNode);
                 currentNode = subNode;
+            }
+        }
+        while(!stack.empty() && result.appNameList.size()<this.returnAppCount){
+            currentNode = stack.pop();
+            if(currentNode.branches.size()!=0){
+                for(Map.Entry<Object, TreeNode> entry: currentNode.branches.entrySet()){
+                    stack.add(entry.getValue());
+                }
+            }else{
                 result.add(currentNode.appName);
             }
         }
