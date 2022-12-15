@@ -1,4 +1,5 @@
 package com.java.recomapp.decisiontree;
+import com.java.recomapp.MainActivity;
 import com.java.recomapp.SideBarService;
 import com.java.recomapp.utils.FileUtils;
 import com.java.recomapp.utils.datacollect.DeviceManager;
@@ -6,6 +7,8 @@ import com.java.recomapp.utils.datacollect.MotionManager;
 import com.java.recomapp.utils.datacollect.NoiseManager;
 import com.java.recomapp.utils.datacollect.PositionManager;
 import android.content.Context;
+import android.util.Log;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -139,6 +142,7 @@ class Dataset{
             saveContent.append(y);
             saveContent.append("\n");
         }
+        Log.i("savaData", "saveDataset: 1");
         FileUtils.writeStringToFile(saveContent.toString(), new File(fileName));
     }
 
@@ -173,15 +177,15 @@ public class Decision {
     Dataset dataset;
     boolean[] validFeatureList = {true, true, true, true, true, true};
     int returnAppCount = 5;
-    int trainStep = 10;
+    int trainStep = 1;
     int datasetSize = 10000;
     int updateCount = 0;
     DeviceManager deviceManager;
     MotionManager motionManager;
     NoiseManager noiseManager;
     PositionManager positionManager;
-    static final String datasetFilePath = "";
-    static final String modelConfigFilePath = "";
+    static final String datasetFilePath = MainActivity.FILE_FOLDER + "dataset.txt";
+    static final String modelConfigFilePath = MainActivity.FILE_FOLDER + "modelconfig.txt";
     /*
         初始化函数，需要提供一些参数来初始化我们的服务以读取手机中的一些数据（如位置，运动数据等等）
         wzgg写的我也不太知道这两个参数什么意思
@@ -292,6 +296,7 @@ public class Decision {
             this.saveModel();
             this.genTree(this.root, this.dataset.getSubDataset(this.accessAppNameList), this.validFeatureList);
         }
+        Log.i("train", "update decision: " + this.updateCount + this.trainStep);
     }
 
     /*
