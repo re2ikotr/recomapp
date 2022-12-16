@@ -242,6 +242,7 @@ public class Decision {
     public void setValidFeatureList(boolean[] valid){
         this.validFeatureList = valid;
         this.genTree(this.root, this.dataset.getSubDataset(this.accessAppNameList), this.validFeatureList);
+        Log.d("tag","setValidFeatureList");
     }
 
     /*

@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.java.recomapp.MainActivity;
 import com.java.recomapp.R;
 import com.java.recomapp.SideBarService;
 import com.java.recomapp.utils.PermissionUtil;
@@ -118,11 +119,15 @@ public class SidePanel implements View.OnClickListener {
         }
 
         List<String> appList = new ArrayList<>();
-        for(int i = 0; i < appList_temp.size(); i++) {
-            appList.add(appList_temp.get(i).getKey());
-        }
 
-        appList = SideBarService.decisionTree.predict();
+        if (MainActivity.useDecisionTree) {
+            appList = SideBarService.decisionTree.predict();
+        }
+        else {
+            for(int i = 0; i < appList_temp.size(); i++) {
+                appList.add(appList_temp.get(i).getKey());
+            }
+        }
 
         packageManager = mContext.getPackageManager();
         packageInfoList = packageManager.getInstalledPackages(0);

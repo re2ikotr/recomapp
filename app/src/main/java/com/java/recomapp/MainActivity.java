@@ -98,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
                 }else {
                     validFeatureList[0] = false;
                 }
+                SideBarService.decisionTree.setValidFeatureList(validFeatureList);
             }
         });
         enable_app = findViewById(R.id.enable_app);
@@ -110,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
                 }else {
                     validFeatureList[1] = false;
                 }
+                SideBarService.decisionTree.setValidFeatureList(validFeatureList);
             }
         });
         enable_device = findViewById(R.id.enable_device);
@@ -122,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
                 }else {
                     validFeatureList[2] = false;
                 }
+                SideBarService.decisionTree.setValidFeatureList(validFeatureList);
             }
         });
         enable_noise = findViewById(R.id.enable_noise);
@@ -134,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
                 }else {
                     validFeatureList[3] = false;
                 }
+                SideBarService.decisionTree.setValidFeatureList(validFeatureList);
             }
         });
         enable_position = findViewById(R.id.enable_position);
@@ -146,6 +150,7 @@ public class MainActivity extends AppCompatActivity {
                 }else {
                     validFeatureList[4] = false;
                 }
+                SideBarService.decisionTree.setValidFeatureList(validFeatureList);
             }
         });
         enable_steps = findViewById(R.id.enable_steps);
@@ -158,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
                 }else {
                     validFeatureList[5] = false;
                 }
+                SideBarService.decisionTree.setValidFeatureList(validFeatureList);
             }
         });
 
