@@ -106,7 +106,7 @@ class Dataset{
         if(!datasetFile.canRead())
             return null;
         String datasetContent = FileUtils.getFileContent(fileName);
-        String[] lines = datasetContent.split("\n");
+        String[] lines = datasetContent.split(";");
         int datasetSize = Integer.parseInt(lines[0]);
         Dataset d = new Dataset(datasetSize);
         for(int i=1; i<lines.length; i++){
@@ -129,7 +129,7 @@ class Dataset{
     public void saveDataset(String fileName){
         StringBuilder saveContent = new StringBuilder();
         saveContent.append(this.maxDatasetSize);
-        saveContent.append("\n");
+        saveContent.append(";");
         Iterator<Object[]> xIterator = xData.iterator();
         Iterator<String> yIterator = yData.iterator();
         while(xIterator.hasNext() && yIterator.hasNext()){
@@ -140,7 +140,7 @@ class Dataset{
                 saveContent.append(",");
             }
             saveContent.append(y);
-            saveContent.append("\n");
+            saveContent.append(";");
         }
         Log.i("savaData", "saveDataset: 1");
         FileUtils.writeStringToFile(saveContent.toString(), new File(fileName));
@@ -196,9 +196,9 @@ public class Decision {
         this.noiseManager = new NoiseManager(context, executorService);
         this.positionManager = new PositionManager(context, executorService);
         this.dataset = Dataset.loadDataset(datasetFilePath);
+        this.root = new TreeNode();
         if(this.dataset == null){
             this.dataset = new Dataset(datasetSize);
-            this.root = new TreeNode();
         }else{
             this.loadModel();
         }
@@ -324,7 +324,7 @@ public class Decision {
     protected void loadModel(){
         File inStream = new File(modelConfigFilePath);
         if(!inStream.canRead()){
-            return ;
+            return;
         }
         String[] content = FileUtils.getFileContent(modelConfigFilePath).split("\n");
         this.datasetSize = Integer.parseInt(content[0]);
@@ -338,7 +338,6 @@ public class Decision {
         for(int i=0; i<6; i++){
             this.validFeatureList[i] = validFeatureArray[i].equals("true");
         }
-        this.root = new TreeNode();
         this.genTree(this.root, this.dataset.getSubDataset(this.accessAppNameList), this.validFeatureList);
     }
 
@@ -573,6 +572,9 @@ public class Decision {
         Stack<TreeNode> stack = new Stack<>();
         stack.add(this.root);
         while (true){
+            if (currentNode.branches.size() == 0) {
+                break;
+            }
             TreeNode subNode = currentNode.branches.get(x[currentNode.feature]);
             if (subNode == null){
                 break;
