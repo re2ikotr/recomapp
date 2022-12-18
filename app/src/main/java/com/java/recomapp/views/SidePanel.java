@@ -23,6 +23,8 @@ import android.widget.Toast;
 import com.java.recomapp.MainActivity;
 import com.java.recomapp.R;
 import com.java.recomapp.SideBarService;
+import com.java.recomapp.feedback.DialogListener;
+import com.java.recomapp.feedback.FeedbackDialog;
 import com.java.recomapp.utils.PermissionUtil;
 import com.java.recomapp.whitelist.WhiteListActivity;
 
@@ -61,6 +63,10 @@ public class SidePanel implements View.OnClickListener {
     private static final int COUNT_DOWN_TIME = 5000;
 
     private LayoutInflater mLayoutInflater;
+
+    private DialogListener listener;
+    private FeedbackDialog feedbackDialog;
+    private Button dialogButton;
 
     @SuppressLint("HandlerLeak")
     private Handler mHandler = new Handler(){
@@ -118,10 +124,15 @@ public class SidePanel implements View.OnClickListener {
             });
         }
 
+        Log.i(TAG, "count app1 " + appList_temp.toString());
+        Log.i(TAG, "use decision: " + MainActivity.useDecisionTree);
+
+
         List<String> appList = new ArrayList<>();
 
         if (MainActivity.useDecisionTree) {
             appList = SideBarService.decisionTree.predict();
+            Log.i(TAG, "decision predict: " + appList);
         }
         else {
             for(int i = 0; i < appList_temp.size(); i++) {
@@ -206,6 +217,23 @@ public class SidePanel implements View.OnClickListener {
                 });
             }
         }
+
+        dialogButton = mContentView.findViewById(R.id.dialog_button);
+        dialogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("Click", "onClick in dialog_button");
+                showDialog();
+            }
+        });
+
+        listener = new DialogListener() {
+            @Override
+            public void onClick(FeedbackDialog dialog, View view) {
+                feedbackDialog.dismiss();
+            }
+        };
+
         mWindowManager.addView(mContentView,params);
         return mContentView;
     }
@@ -310,5 +338,29 @@ public class SidePanel implements View.OnClickListener {
         }else {
             brightnessOrVolume(0);
         }
+    }
+
+    public void showDialog(){
+        feedbackDialog = new FeedbackDialog(mContext, "不知道", "有问题么", "啥问题", new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.e("----->", "ok");
+                //点击按钮发生的事件
+            }
+        }, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.e("----->", "cancle");
+                //点击按钮发生的事件
+            }
+        }, listener);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            feedbackDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
+        } else {
+            feedbackDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+        }
+        feedbackDialog.show();
+
     }
 }

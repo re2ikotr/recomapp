@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/title1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:layout_margin="4dp"
+        android:text="没找到想要的App？"/>
+
+    <EditText
+        android:hint="请输入现在的情境信息，以便我们做出改进"
+        android:textColorHint="#95A1AA"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:minHeight="10dp"
+        android:layout_below="@+id/title1"
+        android:id="@+id/info_input"
+        android:layout_marginHorizontal="10dp"/>
+    <TextView
+        android:id="@+id/content1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:text="请选择您要打开的App与哪些情境因素有关："
+        android:layout_margin="4dp"
+        android:layout_below="@id/info_input"
+        android:gravity="center"/>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/content1"
+        android:id="@+id/check_field"
+        android:layout_marginHorizontal="10dp">
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="运动数据"
+            android:id="@+id/case_sports"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="10dp"/>
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="时间"
+            android:id="@+id/case_time"
+            android:layout_below="@id/case_sports"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="地点"
+            android:id="@+id/case_place"
+            android:layout_below="@id/case_time"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="蓝牙"
+            android:id="@+id/case_bluetooth"
+            android:layout_alignTop="@+id/case_sports"
+            android:layout_alignRight="@+id/case_loud"
+            android:layout_alignLeft="@+id/case_loud"
+            />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="环境噪声           "
+            android:id="@+id/case_loud"
+            android:layout_below="@id/case_bluetooth"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="上个使用的App"
+            android:id="@+id/case_lastapp"
+            android:layout_below="@id/case_loud"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            />
+
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/title2"
+        android:layout_below="@id/check_field"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="6dp"
+        android:paddingRight="20dp"
+        android:paddingLeft="20dp"
+        >
+        <Button
+            android:id="@+id/ok"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:text="确定"/>
+        <Button
+            android:id="@+id/cancel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:text="取消"/>
+    </LinearLayout>
+
+
+
+</RelativeLayout>
