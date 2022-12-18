@@ -353,7 +353,7 @@ public class SidePanel implements View.OnClickListener {
                 Log.e("----->", "cancle");
                 //点击按钮发生的事件
             }
-        },listener);
+        }, listener);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             feedbackDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);

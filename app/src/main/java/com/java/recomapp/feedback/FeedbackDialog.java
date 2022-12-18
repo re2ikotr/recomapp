@@ -11,11 +11,8 @@ import com.java.recomapp.R;
 
 public class FeedbackDialog extends Dialog {
     private TextView mTipOneView;
-    private TextView mTipTwoView;
-    private TextView mTitleView;
     private Button mOkView;
     private Button mCancelView;
-    private Button mKonwView;
 
     private View.OnClickListener mOkListener;
     private View.OnClickListener mCancelListener;
@@ -51,9 +48,13 @@ public class FeedbackDialog extends Dialog {
         mOkView = (Button) findViewById(R.id.ok);
         mTipOneView = (TextView) findViewById(R.id.content1);
 
-        mTipOneView.setText(oneTip);
         mCancelView.setOnClickListener(mCancelListener);
-        mOkView.setOnClickListener(mOkListener);
+        mOkView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mKnowListener.onClick(FeedbackDialog.this,view);
+            }
+        });
         mCancelView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
