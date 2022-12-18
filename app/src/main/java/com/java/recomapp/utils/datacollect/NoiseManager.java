@@ -32,6 +32,7 @@ public class NoiseManager {
             @Override
             public void run() {
                 start_record_time = System.currentTimeMillis();
+                Log.e(TAG, "begin to collect noise");
                 getNoiseLevel();
             }
         }, 0, 30 * 1000, TimeUnit.MILLISECONDS);
@@ -70,8 +71,8 @@ public class NoiseManager {
                     for (short value : buffer) {
                         v += value * value;
                     }
-                    double mean = v / (double) r;
-                    double volume = 10 * Math.log10(mean);
+                    double mean = (r > 0) ? v / (double) r : 0;
+                    double volume = (mean > 0) ? 10 * Math.log10(mean) : 0;
                     volume_cnt += volume;
                     epoch_cnt += 1;
                 }

@@ -28,7 +28,7 @@ public class MotionManager {
     public MotionManager(Context context, ScheduledExecutorService executorService) {
         mContext = context;
         sensorManager = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
-        stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+        stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
         executor = executorService;
         step_latest = 0;
         step_10s_ago = 0;
@@ -36,8 +36,8 @@ public class MotionManager {
         sensorEventListener = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent event) {
-                if (event.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
-                    step_latest = Math.round(event.values[0]);
+                if (event.sensor.getType() == Sensor.TYPE_STEP_DETECTOR) {
+                    step_latest += Math.round(event.values[0]);
                 }
             }
 
@@ -51,8 +51,8 @@ public class MotionManager {
         executor.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                step_10s = step_latest - step_10s_ago;
-                step_10s_ago = step_latest;
+                step_10s = step_latest;
+                step_latest = 0;
             }
         }, 0, 10 * 1000, TimeUnit.MILLISECONDS);
     }
@@ -62,6 +62,14 @@ public class MotionManager {
         // 0：静止
         // 1：走路
         // 2：跑步
-        return step_10s;
+        if (step_10s < 0) {
+            return -1;
+        } else if (step_10s == 0) {
+            return 0;
+        } else if (step_10s < 21) {
+            return 1;
+        } else {
+            return 2;
+        }
     }
 }

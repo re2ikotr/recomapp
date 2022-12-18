@@ -350,6 +350,7 @@ public class Decision {
         x[Features.NOISE] = this.getNoise();
         x[Features.POSITION] = this.getPosition();
         x[Features.STEP] = this.getStep();
+        Log.e("get x: ", Arrays.toString(x));
         return x;
     }
 
@@ -549,25 +550,25 @@ public class Decision {
             return -1;
         // 分档次
         double noise = noiseManager.getNoise();
-        if(noise < 30){
+        if (noise < 40){
             return 0;
         } else if (noise < 60) {
             return 1;
-        } else if (noise <100){
+        } else if (noise < 100){
             return 2;
-        } else{
+        } else {
             return 3;
         }
     }
 
     protected Integer getStep(){
-        if(!this.validFeatureList[Features.STEP]){
+        if (!this.validFeatureList[Features.STEP]) {
             return -1;
         }
         return motionManager.getStepCount();
     }
 
-    protected List<String> predict(Object[] x){
+    protected List<String> predict(Object[] x) {
         TreeNode currentNode = this.root;
         AppNameReturn result = new AppNameReturn(this.returnAppCount);
         Stack<TreeNode> stack = new Stack<>();

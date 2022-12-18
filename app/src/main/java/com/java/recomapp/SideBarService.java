@@ -34,6 +34,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -93,92 +95,7 @@ public class SideBarService extends AccessibilityService {
         super.onCreate();
         createToucher();
 
-        ScheduledExecutorService executorService = new ScheduledExecutorService() {
-            @Override
-            public ScheduledFuture<?> schedule(Runnable runnable, long l, TimeUnit timeUnit) {
-                return null;
-            }
-
-            @Override
-            public <V> ScheduledFuture<V> schedule(Callable<V> callable, long l, TimeUnit timeUnit) {
-                return null;
-            }
-
-            @Override
-            public ScheduledFuture<?> scheduleAtFixedRate(Runnable runnable, long l, long l1, TimeUnit timeUnit) {
-                return null;
-            }
-
-            @Override
-            public ScheduledFuture<?> scheduleWithFixedDelay(Runnable runnable, long l, long l1, TimeUnit timeUnit) {
-                return null;
-            }
-
-            @Override
-            public void shutdown() {
-
-            }
-
-            @Override
-            public List<Runnable> shutdownNow() {
-                return null;
-            }
-
-            @Override
-            public boolean isShutdown() {
-                return false;
-            }
-
-            @Override
-            public boolean isTerminated() {
-                return false;
-            }
-
-            @Override
-            public boolean awaitTermination(long l, TimeUnit timeUnit) throws InterruptedException {
-                return false;
-            }
-
-            @Override
-            public <T> Future<T> submit(Callable<T> callable) {
-                return null;
-            }
-
-            @Override
-            public <T> Future<T> submit(Runnable runnable, T t) {
-                return null;
-            }
-
-            @Override
-            public Future<?> submit(Runnable runnable) {
-                return null;
-            }
-
-            @Override
-            public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> collection) throws InterruptedException {
-                return null;
-            }
-
-            @Override
-            public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> collection, long l, TimeUnit timeUnit) throws InterruptedException {
-                return null;
-            }
-
-            @Override
-            public <T> T invokeAny(Collection<? extends Callable<T>> collection) throws ExecutionException, InterruptedException {
-                return null;
-            }
-
-            @Override
-            public <T> T invokeAny(Collection<? extends Callable<T>> collection, long l, TimeUnit timeUnit) throws ExecutionException, InterruptedException, TimeoutException {
-                return null;
-            }
-
-            @Override
-            public void execute(Runnable runnable) {
-
-            }
-        };
+        ScheduledExecutorService executorService = Executors.newScheduledThreadPool(6);
         Log.i(TAG, "onCreate: before decision");
         decisionTree = new Decision(this, executorService);
         Log.i(TAG, "onCreate: after decision");
