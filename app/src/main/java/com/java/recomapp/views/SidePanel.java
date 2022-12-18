@@ -2,6 +2,7 @@ package com.java.recomapp.views;
 
 import android.accessibilityservice.AccessibilityService;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -50,6 +51,7 @@ public class SidePanel implements View.OnClickListener {
     private LinearLayout mSeekBarView;
     private LinearLayout mAnotherArrowView;
     private Button exit_button;
+    private Button dialog_button;
     private int mTagTemp = -1;
 
     private ArrayList<Map.Entry<String, Integer>> appList_temp;
@@ -149,6 +151,19 @@ public class SidePanel implements View.OnClickListener {
                 goNormal();
             }
         });
+
+//        dialog_button.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Log.d("Click", "onClick in dialog_button");
+//                new AlertDialog.Builder(mContext)
+//                        .setTitle("标题")
+//                        .setMessage("简单消息框")
+//                        .setPositiveButton("确定", null)
+//                        .show();
+//            }
+//        });
+
         for (PackageInfo packageInfo: packageInfoList) {
             if (appList.size() > 0 && packageInfo.applicationInfo.packageName.equals(appList.get(0))
                     && (whiteList.containsKey(appList.get(0)) && whiteList.get(appList.get(0)) == true)) {
