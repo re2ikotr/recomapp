@@ -1,11 +1,13 @@
 package com.java.recomapp.views;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.os.Build;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -21,7 +23,7 @@ import com.java.recomapp.SideBarService;
  *
  * @author majh
  */
-public class FloatButton implements View.OnClickListener {
+public class FloatButton implements View.OnTouchListener {
 
     private WindowManager.LayoutParams mParams;
     private LinearLayout mArrowView;
@@ -32,6 +34,13 @@ public class FloatButton implements View.OnClickListener {
     private SidePanel mContentBar;
     private androidx.constraintlayout.widget.ConstraintLayout mContentBarView;
     private LinearLayout mAnotherArrowView;
+
+    double x = 0;
+    double y = 0;
+    double px = 0;
+    double py = 0;
+
+    boolean isMove = false;
 
     public LinearLayout getView(Context context,boolean left,WindowManager windowManager,SideBarService sideBarService) {
         mContext = context;
@@ -58,7 +67,7 @@ public class FloatButton implements View.OnClickListener {
         LayoutInflater inflater = LayoutInflater.from(context);
         mArrowView = (LinearLayout) inflater.inflate(R.layout.layout_float_button, null);
         AppCompatImageView arrow = mArrowView.findViewById(R.id.arrow);
-        arrow.setOnClickListener(this);
+        arrow.setOnTouchListener(this);
         if(left) {
             arrow.setRotation(180);
             mParams.gravity = Gravity.START | Gravity.CENTER_VERTICAL;
@@ -68,28 +77,63 @@ public class FloatButton implements View.OnClickListener {
             mParams.windowAnimations = R.style.RightSeekBarAnim;
         }
         mWindowManager.addView(mArrowView,mParams);
+
+
         return mArrowView;
     }
 
     @Override
-    public void onClick(View v) {
-        Log.d("Click", "onClick in FloatButton");
-        switch (v.getId()) {
-            case R.id.arrow:
-                mArrowView.setVisibility(View.GONE);
-                mAnotherArrowView.setVisibility(View.GONE);
+    public boolean onTouch(View v, MotionEvent event) {
+        final WindowManager.LayoutParams floatWindowLayoutUpdateParam = mParams;
+
+        switch (event.getAction()) {
+            // When the window will be touched,
+            // the x and y position of that position
+            // will be retrieved
+            case MotionEvent.ACTION_DOWN:
+                x = floatWindowLayoutUpdateParam.x;
+                y = floatWindowLayoutUpdateParam.y;
+
+                // returns the original raw X
+                // coordinate of this event
+                px = event.getRawX();
+
+                // returns the original raw Y
+                // coordinate of this event
+                py = event.getRawY();
+                break;
+            // When the window will be dragged around,
+            // it will update the x, y of the Window Layout Parameter
+            case MotionEvent.ACTION_MOVE:
+                isMove = true;
+                floatWindowLayoutUpdateParam.x = (int) ((x + event.getRawX()) - px);
+                floatWindowLayoutUpdateParam.y = (int) ((y + event.getRawY()) - py);
+
+                // updated parameter is applied to the WindowManager
+                mWindowManager.updateViewLayout(mArrowView, floatWindowLayoutUpdateParam);
+                break;
+
+            case MotionEvent.ACTION_UP:
+                if(isMove) {
+
+                } else {
+                    mArrowView.setVisibility(View.GONE);
+                    mAnotherArrowView.setVisibility(View.GONE);
 //                if(null == mContentBar || null == mContentBarView) {
 //                    mContentBar = new SidePanel();
 //                    mContentBarView = mContentBar.getView(mContext,mLeft,mWindowManager,mParams,mArrowView,mSideBarService, mAnotherArrowView);
 //                }else {
 //                    mContentBarView.setVisibility(View.VISIBLE);
 //                }
-                mContentBar = new SidePanel();
-                mContentBarView = mContentBar.getView(mContext,mLeft,mWindowManager,mParams,mArrowView,mSideBarService, mAnotherArrowView);
+                    mContentBar = new SidePanel();
+                    mContentBarView = mContentBar.getView(mContext,mLeft,mWindowManager,mParams,mArrowView,mSideBarService, mAnotherArrowView);
 
-                mContentBar.removeOrSendMsg(false,true);
+                    mContentBar.removeOrSendMsg(false,true);
+                }
+                isMove = false;
                 break;
         }
+        return true;
     }
 
     public void setAnotherArrowBar(LinearLayout anotherArrowBar) {
