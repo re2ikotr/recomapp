@@ -109,7 +109,7 @@ public class FeedbackDialog extends Dialog {
 
                 SideBarService.decisionTree.update(last_app, a);
                 Toast.makeText(mContext, "反馈成功，感谢支持", Toast.LENGTH_SHORT).show();
-                Log.i("feedback clicked", "feedback" + temp.toString() + a.toString());
+//                Log.i("feedback clicked", "feedback" + temp.toString() + a.toString());
                 mKnowListener.onClick(FeedbackDialog.this,view);
             }
         });
