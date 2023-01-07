@@ -7,7 +7,10 @@ import com.java.recomapp.utils.datacollect.MotionManager;
 import com.java.recomapp.utils.datacollect.NoiseManager;
 import com.java.recomapp.utils.datacollect.PositionManager;
 import android.content.Context;
+import android.provider.ContactsContract;
 import android.util.Log;
+
+import androidx.annotation.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -18,6 +21,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
@@ -31,6 +35,65 @@ class TreeNode{
     public TreeNode(){
         feature = Features.INVALID;
         branches = new HashMap<>();
+    }
+}
+
+class UserPreference{
+    Map<String, int[]> featureCount;
+    public UserPreference(){
+        featureCount = new HashMap<>();
+    }
+
+    public void update(Object[] x, int[] validFeatureList){
+        String featureContent = makeObjectArrayToString(x);
+        if(featureCount.containsKey(featureContent)){
+            Objects.requireNonNull(featureCount.get(featureContent))[makeBitMapToInt(validFeatureList)] += 1;
+        }else{
+            int[] featureBitMap = new int[1<<6];
+            featureBitMap[makeBitMapToInt(validFeatureList)] = 1;
+            featureCount.put(featureContent, featureBitMap);
+        }
+    }
+
+    public boolean[] getValidFeatureList(Object[] x, boolean[] validFeatureList){
+        String featureContent = makeObjectArrayToString(x);
+        boolean[] returnValidFeatureList = validFeatureList.clone();
+        if(featureCount.containsKey(featureContent)){
+            int[] featureBitMap = Objects.requireNonNull(featureCount.get(featureContent));
+            int maxNumber = -1;
+            int maxIndex=0;
+            for(int i=0; i<featureBitMap.length; i++){
+                if(featureBitMap[i]>maxNumber){
+                    maxNumber = featureBitMap[i];
+                    maxIndex = i;
+                }
+            }
+            boolean[] bitmap = makeIntToBitMap(maxIndex);
+            for(int i=0; i<bitmap.length; i++){
+                returnValidFeatureList[i] = returnValidFeatureList[i] && bitmap[i];
+            }
+        }
+        return returnValidFeatureList;
+    }
+
+    int makeBitMapToInt(int[] validFeatureList){
+        int result = 0;
+        for(int featureIndex:validFeatureList){
+            result += (1<<featureIndex);
+        }
+        return result;
+    }
+
+    boolean[] makeIntToBitMap(int bit){
+        boolean[] bitmap = new boolean[6];
+        for(int i=0; i<bitmap.length; i++){
+            bitmap[i] = ((bit & (1 << i)) != 0);
+        }
+        return bitmap;
+    }
+
+    String makeObjectArrayToString(Object[] x){
+        return Arrays.toString(x);
     }
 }
 
@@ -106,6 +169,11 @@ class Dataset{
         if(!datasetFile.canRead())
             return null;
         String datasetContent = FileUtils.getFileContent(fileName);
+
+        return loadContent(datasetContent);
+    }
+
+    public static Dataset loadContent(String datasetContent){
         String[] lines = datasetContent.split(";");
         int datasetSize = Integer.parseInt(lines[0]);
         Dataset d = new Dataset(datasetSize);
@@ -124,6 +192,11 @@ class Dataset{
             d.update(x, y);
         }
         return d;
+    }
+
+    public static Dataset getDefaultDataset(){
+        String content = "10000;5,,1024,0,0_0_0@0,0,com.ss.android.tuchong;5,com.ss.android.tuchong,1024,0,0_0_0@0,0,com.dongqiudi.news;5,com.dongqiudi.news,1024,0,0_0_0@0,0,com.sankuai.meituan;5,com.sankuai.meituan,1024,0,0_0_0@0,0,com.jingdong.app.mall;5,com.jingdong.app.mall,1024,0,0_0_0@0,0,com.sankuai.meituan;5,com.sankuai.meituan,1024,0,0_0_0@0,0,com.lbe.security.miui;5,com.lbe.security.miui,1024,0,0_0_0@0,0,com.miui.securitycenter;5,com.miui.securitycenter,1024,0,0_0_0@0,0,com.github.kr328.clash.foss;5,com.github.kr328.clash.foss,1024,1,0_0_0@0,0,com.tencent.mm;5,com.tencent.mm,1024,0,0_0_0@0,0,com.miui.securitycenter;5,com.miui.securitycenter,1024,0,0_0_0@0,0,com.tencent.mm;5,com.tencent.mm,1024,0,0_0_0@0,0,com.zhihu.android;0,com.zhihu.android,1024,0,0_0_0@0,0,com.tencent.mm;0,com.tencent.mm,1024,0,0_0_0@0,0,com.xingin.xhs;0,com.xingin.xhs,1024,0,0_0_0@0,0,com.tencent.mm;0,com.tencent.mm,1024,0,0_0_0@0,0,com.jingdong.app.mall;0,com.jingdong.app.mall,1024,0,0_0_0@0,0,com.tencent.mm;0,com.tencent.mm,1024,0,0_0_0@0,0,com.jingdong.app.mall;0,com.jingdong.app.mall,1024,0,0_0_0@0,0,com.tencent.mm;0,com.tencent.mm,1024,0,0_0_0@0,0,com.baidu.tieba;0,com.baidu.tieba,1024,0,0_0_0@0,0,com.tencent.mm;0,com.tencent.mm,1024,0,0_0_0@0,0,com.miui.securitycenter;0,com.miui.securitycenter,1024,0,0_0_0@0,0,com.tencent.mm;0,com.tencent.mm,1024,0,0_0_0@0,0,com.dongqiudi.news;0,com.dongqiudi.news,1024,0,0_0_0@0,0,com.tencent.mm;0,com.tencent.mm,1024,0,0_0_0@0,0,com.dongqiudi.news;0,com.dongqiudi.news,1024,0,0_0_0@0,0,com.tencent.mm;0,com.tencent.mm,1024,0,0_0_0@0,0,com.dongqiudi.news;0,com.dongqiudi.news,1024,0,0_0_0@0,0,com.tencent.mm;0,com.tencent.mm,1024,0,0_0_0@0,0,com.miui.screenshot;0,com.miui.screenshot,1024,0,0_0_0@0,0,com.tencent.mm;0,com.tencent.mm,1024,0,0_0_0@0,0,chuxin.shimo.shimowendang;0,chuxin.shimo.shimowendang,1024,0,0_0_0@0,0,com.miui.screenshot;0,com.miui.screenshot,1024,0,0_0_0@0,0,com.tencent.mm;0,com.tencent.mm,1024,0,0_0_0@0,0,com.quark.browser;0,com.quark.browser,1024,0,0_0_0@0,0,com.tencent.mm;0,com.tencent.mm,1024,0,0_0_0@0,0,com.quark.browser;0,com.quark.browser,1024,0,0_0_0@0,0,com.tencent.mm;0,com.tencent.mm,1024,0,0_0_0@0,0,com.quark.browser;0,com.quark.browser,1024,0,0_0_0@0,0,com.tencent.mm;0,com.tencent.mm,1024,0,0_0_0@0,0,com.quark.browser;0,com.quark.browser,1024,0,0_0_0@0,0,com.tencent.mm;0,com.tencent.mm,1024,0,0_0_0@0,0,com.quark.browser;0,com.quark.browser,1024,0,0_0_0@0,0,com.github.kr328.clash.foss;0,com.github.kr328.clash.foss,1024,0,0_0_0@0,0,com.tencent.mm;0,com.tencent.mm,1024,0,0_0_0@0,0,com.quark.browser;0,com.quark.browser,1024,0,0_0_0@0,0,com.tencent.mm;0,com.tencent.mm,1024,0,0_0_0@0,0,com.quark.browser;0,com.quark.browser,1024,0,0_0_0@0,0,com.tencent.mm;0,com.tencent.mm,1024,0,0_0_0@0,0,com.quark.browser;0,com.quark.browser,1024,0,0_0_0@0,0,com.tencent.mm;0,com.tencent.mm,1024,0,0_0_0@0,0,com.quark.browser;0,com.quark.browser,1024,0,0_0_0@0,0,com.github.kr328.clash.foss;0,com.github.kr328.clash.foss,1024,0,0_0_0@0,0,com.tencent.mm;0,com.tencent.mm,1024,0,0_0_0@0,0,com.dongqiudi.news;0,com.dongqiudi.news,1024,0,0_0_0@0,0,com.tencent.mm;0,com.tencent.mm,1024,0,0_0_0@0,0,com.dongqiudi.news;0,com.dongqiudi.news,1024,0,0_0_0@0,0,com.tencent.mm;0,com.tencent.mm,1024,0,0_0_0@0,0,com.dongqiudi.news;0,com.dongqiudi.news,1024,0,0_0_0@0,0,com.baidu.tieba;0,com.baidu.tieba,1024,0,0_0_0@0,0,com.tencent.mm;0,com.tencent.mm,1024,0,0_0_0@0,0,com.dongqiudi.news;0,com.dongqiudi.news,1024,0,0_0_0@0,0,com.tencent.mm;0,com.tencent.mm,1024,0,0_0_0@0,0,com.dongqiudi.news;0,com.dongqiudi.news,1024,0,0_0_0@0,0,com.tencent.mm;0,com.tencent.mm,1024,0,0_0_0@0,0,com.dongqiudi.news;0,com.dongqiudi.news,1024,0,0_0_0@0,0,com.futbin;0,com.futbin,1024,0,0_0_0@0,0,com.tencent.mm;2,com.tencent.mm,1024,0,0_0_0@0,0,com.baidu.tieba;3,com.baidu.tieba,1024,0,0_0_0@0,0,com.jingdong.app.mall;3,com.jingdong.app.mall,1024,0,0_0_0@0,0,com.tencent.mm;3,com.tencent.mm,1024,0,0_0_0@0,0,com.quark.browser;3,com.quark.browser,1024,0,0_0_0@0,0,com.tencent.mm;3,com.tencent.mm,1024,0,0_0_0@0,0,com.baidu.tieba;3,com.baidu.tieba,1024,0,0_0_0@0,0,com.jingdong.app.mall;3,com.jingdong.app.mall,1024,0,0_0_0@0,0,com.tencent.mm;3,com.tencent.mm,1024,0,0_0_0@0,0,com.baidu.tieba;3,com.baidu.tieba,1024,0,0_0_0@0,0,com.tencent.mm;3,com.tencent.mm,1024,0,0_0_0@0,0,com.baidu.tieba;3,com.baidu.tieba,1024,0,0_0_0@0,0,com.tencent.mm;3,com.tencent.mm,1024,0,0_0_0@0,0,com.baidu.tieba;3,com.baidu.tieba,1024,0,0_0_0@0,0,com.tencent.mm;3,com.tencent.mm,1024,0,0_0_0@0,0,com.jingdong.app.mall;3,com.jingdong.app.mall,1024,0,0_0_0@0,0,com.tencent.mm;3,com.tencent.mm,1024,0,0_0_0@0,0,com.android.contacts;3,com.android.contacts,1024,0,0_0_0@0,0,com.jingdong.app.mall;3,com.jingdong.app.mall,1024,0,0_0_0@0,0,com.miui.gallery;3,com.miui.gallery,1024,1,0_0_0@0,0,com.quark.browser;3,com.quark.browser,1024,0,0_0_0@0,0,com.tencent.mm;3,com.tencent.mm,1024,0,0_0_0@0,0,com.sina.weibo;3,com.sina.weibo,1024,0,0_0_0@0,0,com.baidu.tieba;3,com.baidu.tieba,1024,0,0_0_0@0,0,com.tencent.mm;3,com.tencent.mm,1024,0,0_0_0@0,0,com.quark.browser;3,com.quark.browser,1024,0,0_0_0@0,0,com.github.kr328.clash.foss;3,com.github.kr328.clash.foss,1024,0,0_0_0@0,0,com.quark.browser;3,com.quark.browser,1024,0,0_0_0@0,0,com.microsoft.emmx;3,com.microsoft.emmx,1024,0,0_0_0@0,0,com.quark.browser;3,com.quark.browser,1024,0,0_0_0@0,0,com.tencent.mm;3,com.tencent.mm,1024,0,0_0_0@0,0,com.jingdong.app.mall;4,com.jingdong.app.mall,1024,0,0_0_0@0,0,com.tencent.mm;4,com.tencent.mm,1024,0,0_0_0@0,0,com.jingdong.app.mall;4,com.jingdong.app.mall,1024,0,0_0_0@0,0,com.tencent.mm;4,com.tencent.mm,1024,0,0_0_0@0,0,com.jingdong.app.mall;4,com.jingdong.app.mall,1024,0,0_0_0@0,0,com.tencent.mm;4,com.tencent.mm,1024,0,0_0_0@0,0,com.baidu.tieba;4,com.baidu.tieba,1024,0,0_0_0@0,0,com.tencent.mm;4,com.tencent.mm,1024,0,0_0_0@0,0,com.baidu.tieba;4,com.baidu.tieba,1024,0,0_0_0@0,0,com.tencent.mm;4,com.tencent.mm,1024,1,0_0_0@0,0,com.baidu.tieba;4,com.baidu.tieba,1024,1,0_0_0@0,0,com.tencent.mm;4,com.tencent.mm,1024,0,0_0_0@0,0,com.github.kr328.clash.foss;4,com.github.kr328.clash.foss,1024,0,0_0_0@0,0,com.tencent.mm;4,com.tencent.mm,1024,1,0_0_0@0,0,com.jingdong.app.mall;4,com.jingdong.app.mall,1024,1,0_0_0@0,0,com.douban.frodo;4,com.douban.frodo,1024,0,0_0_0@0,0,com.tencent.mm;4,com.tencent.mm,1024,0,0_0_0@0,0,com.miui.screenshot;4,com.miui.screenshot,1024,0,0_0_0@0,0,com.tencent.mm;4,com.tencent.mm,1024,0,0_0_0@0,0,com.baidu.tieba;4,com.baidu.tieba,1024,0,0_0_0@0,0,com.tencent.mm;4,com.tencent.mm,1024,0,0_0_0@0,0,com.quark.browser;4,com.quark.browser,1024,0,0_0_0@0,0,com.taobao.taobao;4,com.taobao.taobao,1024,0,0_0_0@0,0,com.jingdong.app.mall;4,com.jingdong.app.mall,1024,0,0_0_0@0,0,com.taobao.idlefish;4,com.taobao.idlefish,1024,0,0_0_0@0,0,com.tencent.mm;4,com.tencent.mm,1024,0,0_0_0@0,0,com.jingdong.app.mall;4,com.jingdong.app.mall,1024,0,0_0_0@0,0,com.tencent.mm;4,com.tencent.mm,1024,0,0_0_0@0,0,com.dongqiudi.news;4,com.dongqiudi.news,1024,0,0_0_0@0,0,com.tencent.mm;5,com.tencent.mm,1024,0,0_0_0@0,0,com.android.fileexplorer;5,com.android.fileexplorer,1024,0,0_0_0@0,0,cn.wps.moffice_eng;5,cn.wps.moffice_eng,1024,0,0_0_0@0,0,com.android.fileexplorer;5,com.android.fileexplorer,1024,0,0_0_0@0,0,cn.wps.moffice_eng;5,cn.wps.moffice_eng,1024,0,0_0_0@0,0,com.android.fileexplorer;5,com.android.fileexplorer,1024,1,0_0_0@0,0,com.tencent.mm;5,com.tencent.mm,1024,0,0_0_0@0,0,com.jingdong.app.mall;5,com.jingdong.app.mall,1024,0,0_0_0@0,0,com.tencent.mm;5,com.tencent.mm,1024,0,0_0_0@0,0,com.android.fileexplorer;5,com.android.fileexplorer,1024,0,0_0_0@0,0,com.tencent.mm;0,com.tencent.mm,1024,0,0_0_0@0,0,com.jingdong.app.mall;0,com.jingdong.app.mall,1024,0,0_0_0@0,0,com.android.deskclock;1,com.android.deskclock,1024,2,0_0_0@0,0,com.tencent.mm;1,com.tencent.mm,1024,0,0_0_0@0,0,com.jingdong.app.mall;2,com.jingdong.app.mall,1024,0,0_0_0@0,0,com.android.camera;2,com.android.camera,1024,0,0_0_0@0,0,com.tencent.mm;2,com.tencent.mm,1024,0,0_0_0@0,0,com.tencent.wemeet.app;2,com.tencent.wemeet.app,1024,0,0_0_0@0,0,com.miui.securityinputmethod;2,com.miui.securityinputmethod,1024,0,0_0_0@0,0,com.tencent.wemeet.app;2,com.tencent.wemeet.app,1024,0,0_0_0@0,0,com.android.camera;2,com.android.camera,1024,0,0_0_0@0,0,com.tencent.wemeet.app;2,com.tencent.wemeet.app,1024,0,0_0_0@0,0,com.xiaomi.scanner;2,com.xiaomi.scanner,1024,0,0_0_0@0,0,com.android.camera;2,com.android.camera,1024,0,0_0_0@0,0,com.tencent.mm;2,com.tencent.mm,1024,0,0_0_0@0,0,com.douban.frodo;2,com.douban.frodo,1024,0,0_0_0@0,0,com.zhihu.android;2,com.zhihu.android,1024,0,0_0_0@0,0,com.douban.frodo;2,com.douban.frodo,1024,0,0_0_0@0,0,com.tencent.mm;2,com.tencent.mm,1024,0,0_0_0@0,0,com.jingdong.app.mall;2,com.jingdong.app.mall,1024,0,0_0_0@0,0,com.miui.screenshot;2,com.miui.screenshot,1024,0,0_0_0@0,0,com.jingdong.app.mall;2,com.jingdong.app.mall,1024,0,0_0_0@0,0,com.miui.screenshot;2,com.miui.screenshot,1024,0,0_0_0@0,0,com.jingdong.app.mall;2,com.jingdong.app.mall,1024,0,0_0_0@0,0,com.xiaomi.scanner;2,com.xiaomi.scanner,1024,0,0_0_0@0,0,com.tencent.mm;3,com.tencent.mm,1024,0,0_0_0@0,0,com.jingdong.app.mall;3,com.jingdong.app.mall,1024,1,0_0_0@0,0,com.baidu.tieba;3,com.baidu.tieba,1024,0,0_0_0@0,0,com.jingdong.app.mall;3,com.jingdong.app.mall,1024,0,0_0_0@0,0,com.baidu.tieba;3,com.baidu.tieba,1024,0,0_0_0@0,0,com.jingdong.app.mall;3,com.jingdong.app.mall,1024,0,0_0_0@0,0,com.baidu.tieba;3,com.baidu.tieba,1024,0,0_0_0@0,0,com.jingdong.app.mall;3,com.jingdong.app.mall,1024,0,0_0_0@0,0,com.baidu.tieba;3,com.baidu.tieba,1024,0,0_0_0@0,0,com.dongqiudi.news;3,com.dongqiudi.news,1024,0,0_0_0@0,0,com.baidu.tieba;3,com.baidu.tieba,1024,0,0_0_0@0,0,com.dongqiudi.news;3,com.dongqiudi.news,1024,0,0_0_0@0,0,com.tencent.mm;3,com.tencent.mm,1024,0,0_0_0@0,0,com.jingdong.app.mall;3,com.jingdong.app.mall,1024,0,0_0_0@0,0,com.android.deskclock;3,com.android.deskclock,1024,0,0_0_0@0,0,com.jingdong.app.mall;3,com.jingdong.app.mall,1024,0,0_0_0@0,0,com.tencent.mm;3,com.tencent.mm,1024,0,0_0_0@0,0,com.baidu.tieba;3,com.baidu.tieba,1024,0,0_0_0@0,0,com.jingdong.app.mall;4,com.jingdong.app.mall,1024,0,0_0_0@0,0,com.tencent.mm;4,com.tencent.mm,1024,0,0_0_0@0,0,com.baidu.tieba;4,com.baidu.tieba,1024,0,0_0_0@0,0,com.jingdong.app.mall;4,com.jingdong.app.mall,1024,0,0_0_0@0,0,com.baidu.tieba;4,com.baidu.tieba,1024,0,0_0_0@0,0,com.tencent.mm;4,com.tencent.mm,1024,0,0_0_0@0,0,com.baidu.tieba;4,com.baidu.tieba,1024,0,0_0_0@0,0,com.tencent.mm;4,com.tencent.mm,1024,0,0_0_0@0,0,com.baidu.tieba;4,com.baidu.tieba,1024,0,0_0_0@0,0,com.tencent.mm;4,com.tencent.mm,1024,0,0_0_0@0,0,com.jingdong.app.mall;4,com.jingdong.app.mall,1024,0,0_0_0@0,0,tv.danmaku.bili;4,tv.danmaku.bili,1024,0,0_0_0@0,0,com.miui.securitycenter;4,com.miui.securitycenter,1024,0,0_0_0@0,0,tv.danmaku.bili;4,tv.danmaku.bili,1024,0,0_0_0@0,0,com.miui.securitycenter;4,com.miui.securitycenter,1024,0,0_0_0@0,0,tv.danmaku.bili;4,tv.danmaku.bili,1024,0,0_0_0@0,0,com.miui.securitycenter;4,com.miui.securitycenter,1024,0,0_0_0@0,0,tv.danmaku.bili;4,tv.danmaku.bili,1024,0,0_0_0@0,0,com.miui.securitycenter;4,com.miui.securitycenter,1024,0,0_0_0@0,0,tv.danmaku.bili;4,tv.danmaku.bili,1024,0,0_0_0@0,0,com.tencent.mm;4,com.tencent.mm,1024,0,0_0_0@0,0,com.jingdong.app.mall;4,com.jingdong.app.mall,1024,0,0_0_0@0,0,com.tencent.mm;4,com.tencent.mm,1024,0,0_0_0@0,0,com.baidu.tieba;4,com.baidu.tieba,1024,0,0_0_0@0,0,com.tencent.mm;4,com.tencent.mm,1024,0,0_0_0@0,0,com.android.fileexplorer;4,com.android.fileexplorer,1024,0,0_0_0@0,0,com.tencent.mm;4,com.tencent.mm,1024,0,0_0_0@0,0,com.miui.securitycenter;4,com.miui.securitycenter,1024,0,0_0_0@0,0,com.taobao.taobao;4,com.taobao.taobao,1024,0,0_0_0@0,0,com.android.fileexplorer;4,com.android.fileexplorer,1024,0,0_0_0@0,0,com.taobao.taobao;4,com.taobao.taobao,1024,0,0_0_0@0,0,com.tencent.mm;4,com.tencent.mm,1024,0,0_0_0@0,0,com.jingdong.app.mall;4,com.jingdong.app.mall,1024,0,0_0_0@0,0,com.android.deskclock;4,com.android.deskclock,1024,0,0_0_0@0,0,com.tencent.mm;4,com.tencent.mm,1024,0,0_0_0@0,0,com.android.deskclock;4,com.android.deskclock,1024,0,0_0_0@0,0,com.tencent.mm;4,com.tencent.mm,1024,0,0_0_0@0,0,com.android.fileexplorer;4,com.android.fileexplorer,1024,0,0_0_0@0,0,com.tencent.mm;4,com.tencent.mm,1024,0,0_0_0@0,0,com.android.fileexplorer;4,com.android.fileexplorer,1024,0,0_0_0@0,0,com.tencent.mm;";
+        return loadContent(content);
     }
 
     public void saveDataset(String fileName){
@@ -174,10 +247,13 @@ public class Decision {
     int algorithm = Algorithm.CART;
     // 训练数据中可用的feature
     List<String> accessAppNameList;
+    Object[] last_state;
     Dataset dataset;
+    UserPreference userPreference;
     boolean[] validFeatureList = {true, true, true, true, true, true};
     int returnAppCount = 5;
     int trainStep = 1;
+    int preferenceWeight = 10;
     int datasetSize = 10000;
     int updateCount = 0;
     DeviceManager deviceManager;
@@ -196,9 +272,10 @@ public class Decision {
         this.noiseManager = new NoiseManager(context, executorService);
         this.positionManager = new PositionManager(context, executorService);
         this.dataset = Dataset.loadDataset(datasetFilePath);
+        this.userPreference = new UserPreference();
         this.root = new TreeNode();
         if(this.dataset == null){
-            this.dataset = new Dataset(datasetSize);
+            this.dataset = Dataset.getDefaultDataset();
         }else{
             this.loadModel();
         }
@@ -251,7 +328,8 @@ public class Decision {
             但是有可能达不到，如果达不到前端需要用频率排名靠前的app填充
          */
     public List<String> predict() {
-        return predict(getX());
+        last_state = getX();
+        return predict(last_state);
     }
 
     /*
@@ -283,12 +361,13 @@ public class Decision {
     }
 
     /*
-        传递给后端在validAppNameList中的当前用户打开的app的名称
-        make sure that the app name is in validAppNameList
-        注意在调用这个函数的时候后端会根据权限去读取当前的手机数据
-        所以应该在点击时间到来时立刻调用该函数，如果等待的时间过长收集到的数据不准确
+        第一个参数是用户当前用户打开的app的名称
+        这里使用的是上一次预测时的情景
      */
     public void update(String appName){
+        if(!this.accessAppNameList.contains(appName)){
+            return ;
+        }
         this.updateCount %= this.trainStep;
         this.updateCount += 1;
         this.dataset.update(getX(), appName);
@@ -297,7 +376,29 @@ public class Decision {
             this.saveModel();
             this.genTree(this.root, this.dataset.getSubDataset(this.accessAppNameList), this.validFeatureList);
         }
-        Log.i("train", "update decision: " + this.updateCount + this.trainStep);
+    }
+    /*
+        第一个参数是用户当前用户打开的app的名称
+        第二个参数是用户认为相关的参数列表
+     */
+    public void update(String appName, int[] userPreferenceFeatureList){
+        if(last_state == null){
+            last_state = getX();
+        }
+        if(!this.accessAppNameList.contains(appName)){
+            return ;
+        }
+        this.userPreference.update(last_state, userPreferenceFeatureList);
+        for(int i=0; i<this.preferenceWeight; i++){
+            this.dataset.update(last_state, appName);
+        }
+        this.updateCount %= this.trainStep;
+        this.updateCount += 1;
+        if(this.updateCount == this.trainStep){
+            this.dataset.saveDataset(Decision.datasetFilePath);
+            this.saveModel();
+            this.genTree(this.root, this.dataset.getSubDataset(this.accessAppNameList), this.validFeatureList);
+        }
     }
 
     /*
@@ -306,15 +407,15 @@ public class Decision {
     public void saveModel(){
         StringBuilder saveContent = new StringBuilder();
         saveContent.append(this.datasetSize);
-        saveContent.append("\n");
+        saveContent.append(";");
         saveContent.append(this.returnAppCount);
-        saveContent.append("\n");
+        saveContent.append(";");
         saveContent.append(this.trainStep);
-        saveContent.append("\n");
+        saveContent.append(";");
         saveContent.append(this.algorithm);
-        saveContent.append("\n");
+        saveContent.append(";");
         saveContent.append(String.join(",", this.accessAppNameList));
-        saveContent.append("\n");
+        saveContent.append(";");
         saveContent.append(this.validFeatureList[0]);
         for(int i=1; i<6; i++){
             saveContent.append(",");
@@ -327,7 +428,7 @@ public class Decision {
         if(!inStream.canRead()){
             return;
         }
-        String[] content = FileUtils.getFileContent(modelConfigFilePath).split("\n");
+        String[] content = FileUtils.getFileContent(modelConfigFilePath).split(";");
         this.datasetSize = Integer.parseInt(content[0]);
         this.returnAppCount = Integer.parseInt(content[1]);
         this.trainStep = Integer.parseInt(content[2]);
@@ -496,7 +597,7 @@ public class Decision {
         Set<Object> values = this.getValuesOfFeature(data, feature);
         for(Object value:values){
             Dataset newData = this.getFeatureValueDataset(data, feature, value);
-            sum += (double)(this.gini(newData) * newData.yData.size()) / (double)(data.yData.size());
+            sum += (this.gini(newData) * newData.yData.size()) / (double)(data.yData.size());
         }
         return sum;
     }
@@ -569,6 +670,10 @@ public class Decision {
     }
 
     protected List<String> predict(Object[] x) {
+        boolean[] genTreeFeatureList = userPreference.getValidFeatureList(x, this.validFeatureList);
+        if(!Arrays.equals(genTreeFeatureList, this.validFeatureList)){
+            this.genTree(this.root, this.dataset.getSubDataset(this.accessAppNameList), validFeatureList);
+        }
         TreeNode currentNode = this.root;
         AppNameReturn result = new AppNameReturn(this.returnAppCount);
         Stack<TreeNode> stack = new Stack<>();
