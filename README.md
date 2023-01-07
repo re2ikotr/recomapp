@@ -1,3 +1,20 @@
-# recomapp
-frontend demo
-refer to https://github.com/afterschoolkido/AndroidSideBar
+1. 机型：`Android9.0`
+2. 项目运行环境：`sdk>=28`
+3. 测试手机型号：目前已在华为、小米机型上进行了测试，效果稳定
+4. 项目文件：
+   - `recomapp`
+     - `utils`：封装了一些工具类，包括
+       - 读写文件
+       - 检测`APP`类型
+       - 获取屏幕长宽和分辨率
+       - 情境采集
+       - 权限检测
+     - `decisiontree`：决策树算法的实现
+     - `feedback`：用户预测后反馈决定因素时的反馈弹窗的实现
+     - `views`：悬浮按钮以及点击悬浮按钮后显示的侧边栏的实现
+     - `whitelist`：白名单功能的实现
+     - `MainActivate.java`：主界面，程序的入口
+     - `DeviceBootReceiver.java`：检测启动时系统的版本和权限是否满足
+     - `SideBarService.java`：常驻的后台服务，检测并记录APP打开事件，同时负责从后端获取推荐结果
+     - `SideBarHideReceiver.java`：监听侧边栏关闭事件并进行关闭
+
